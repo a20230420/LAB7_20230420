@@ -1,0 +1,1222 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab6 · Sesiones de estudio</title><style>
+:root{color-scheme:light;--ink:#172439;--accent:#205bab;--line:#d9e1ec}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:85px}body{margin:0;background:#f4f6fa;color:var(--ink);font:16px/1.65 system-ui,Segoe UI,sans-serif}header{background:#142840;color:white;padding:30px max(20px,calc((100vw - 1040px)/2))}header h1{font-size:30px;line-height:1.2;margin:0 0 12px}header p{margin:0;color:#d4e1f3}nav{position:sticky;top:0;z-index:5;padding:12px 20px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center;background:white;border-bottom:1px solid var(--line)}nav a{font-weight:650}main{max-width:1080px;margin:24px auto;padding:28px 36px;background:white;border:1px solid var(--line);border-radius:12px}a{color:var(--accent);text-underline-offset:3px}h1,h2,h3{line-height:1.3}h1{font-size:30px}h2{font-size:24px;border-bottom:2px solid var(--line);padding-bottom:10px;margin-top:44px}h3{font-size:19px;margin-top:28px}p,li{overflow-wrap:anywhere}li{margin:5px 0}table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;font-size:14px;margin:18px 0}th,td{border:1px solid var(--line);padding:10px 12px;vertical-align:top}th{background:#edf3fb;text-align:left}pre{background:#111f32;color:#e8effb;padding:18px;border-radius:8px;overflow:auto;font-size:13px;line-height:1.6}code{font-family:Consolas,monospace}p code,li code,td code{background:#eef2f8;padding:1px 4px;border-radius:3px;font-size:.9em}section+section{border-top:5px solid var(--accent);margin-top:70px;padding-top:24px}details{background:#eef4fc;padding:14px 20px;border-radius:8px}summary{cursor:pointer;font-weight:700}.note{border-left:4px solid var(--accent);padding:10px 16px;background:#eef4fc}
+@media(max-width:700px){main{margin:0;border:0;border-radius:0;padding:20px 16px}nav{gap:12px;font-size:14px}h1{font-size:25px}pre{font-size:12px}}
+@media print{body{background:white;font-size:10pt}header{background:white;color:#172439;padding:0}header p{color:#172439}nav{display:none}main{border:0;margin:0;padding:0;max-width:none}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f4f4;color:#111;font-size:8pt;border:1px solid #ddd}table{display:table;font-size:8pt}h1,h2,h3{break-after:avoid}tr{break-inside:avoid}section+section{break-before:page}a{color:#172439}details{display:none}}
+</style></head><body><header><h1>Lab6 · Mis horas de estudio</h1><p>Java · XML · FirebaseUI · Firestore · Android 14 o superior</p></header><nav><a href="#proyecto">Proyecto y configuración</a><a href="#contexto">Compatibilidad</a><a href="#codigo">Código completo</a></nav><main><p>Guía de la app de sesiones de estudio del enunciado 2026-2. Ctrl+F para buscar y Ctrl+P para imprimir. El contenido se puede consultar sin conexión.</p><section id="proyecto"><h1>LAB6_20230420 · Mis horas de estudio</h1>
+<p>Aplicación del enunciado <strong>1TEL05, Laboratorio 06, 2026-2: Sistema de Registro de Horas de Estudio</strong>. Java, XML y Groovy; Android 14/API 34 o superior. Preparada como base para el siguiente laboratorio.</p>
+<p>Esta es la versión de <strong>sesiones de estudio</strong> del enunciado real. El ejemplo de inventario anterior permanece en la carpeta independiente <code>PracticaLab6</code>.</p>
+<h2>Estado verificado · 17 de noviembre de 2026</h2>
+<ul>
+<li>Compilación del APK aprobada con el JSON actualizado de <code>lab6-20230420</code>.</li>
+<li><strong>8 pruebas unitarias y 3 instrumentadas aprobadas</strong>, sin fallos, en emulador Android 14/API 34.</li>
+<li>Verificados registro e inicio por correo mediante FirebaseUI, apertura de recuperación sin enviar correos de prueba, cierre de sesión, CRUD desde la interfaz, gráficos/filtro y restauración del listado.</li>
+<li>Verificados en Firebase real el listener, CRUD, rechazo de campos inválidos y lectura/escritura denegadas a otro usuario.</li>
+<li>Lint: <strong>0 errores y 66 advertencias</strong>; estas últimas incluyen recursos/textos y recomendaciones de estilo/compatibilidad.</li>
+<li>Correo y Google habilitados; reglas privadas publicadas; SHA-1/SHA-256 debug registradas. Google con una cuenta real sigue pendiente de prueba manual.</li>
+</ul>
+<h2>Abrir y ejecutar</h2>
+<ol>
+<li>En Android Studio, File &gt; Open &gt; seleccionar <strong>toda esta carpeta</strong>, donde está <code>settings.gradle</code>.</li>
+<li>Usar un JDK compatible para Gradle; JDK 21 es una opción para la PC del laboratorio. Instalar SDK Platform 36 y Build Tools 36.0.0. El dispositivo puede ser Android 14; no es necesario que sea Android 16.</li>
+<li>Colocar por separado el archivo válido de Firebase en <strong><code>app/google-services.json</code></strong>. Esta copia local ya lo contiene, con la configuración OAuth actualizada.</li>
+<li>Sincronizar Gradle. Seleccionar <code>app</code>, un emulador/celular API 34 o superior y pulsar Run.</li>
+</ol>
+<p>La app aparece como <strong>Mis horas de estudio</strong>. El login ofrece correo y Google mediante FirebaseUI con una pantalla personalizada, logo y textos en español. Al entrar por correo se muestran las opciones de registrarse e iniciar sesión; desde el flujo de contraseña se puede recuperar el acceso. La sesión permanece guardada hasta cerrarla.</p>
+<h2>Firebase de esta versión</h2>
+<table>
+<thead>
+<tr>
+<th>Configuración</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Proyecto Firebase</td>
+<td><code>lab6-20230420</code></td>
+</tr>
+<tr>
+<td>Paquete Android y applicationId</td>
+<td><code>com.example.lab06_20230420</code></td>
+</tr>
+<tr>
+<td>Base</td>
+<td>Cloud Firestore <code>(default)</code> existente, región <code>nam5</code></td>
+</tr>
+<tr>
+<td>Autenticación</td>
+<td>Correo/contraseña y Google</td>
+</tr>
+<tr>
+<td>Reglas</td>
+<td><code>firestore.rules</code>, publicadas con aislamiento por UID</td>
+</tr>
+</tbody></table>
+<p>Se reutiliza la app Android ya registrada dentro de ese Firebase. El paquete lleva <strong>lab06</strong>, aunque el ID del proyecto Firebase lleva <strong>lab6</strong>: ambos valores son intencionales y distintos.</p>
+<p>El título del PDF menciona Realtime Database, pero el requisito específico exige <strong>Cloud Firestore</strong>; esta implementación utiliza Firestore.</p>
+<p>SHA-1 y SHA-256 debug de la PC de desarrollo registradas. En otra PC ejecutar <code>signingReport</code>, agregar sus huellas en Firebase &gt; Configuración &gt; Tus apps, y descargar de nuevo el JSON si cambia la configuración OAuth. No copiar claves privadas al repositorio.</p>
+<p><strong><code>google-services.json</code> está excluido de Git.</strong> Un clon necesita copiarlo por separado. Si falta, la app explica cómo configurarlo. Si el JSON todavía no incluye Google/OAuth, muestra un aviso en lugar de cerrar la aplicación. No se requiere un App Secret de Facebook, una cuenta de servicio ni un archivo de Meta para este Lab6.</p>
+<h2>Las cuatro pantallas</h2>
+<table>
+<thead>
+<tr>
+<th>Requisito del enunciado</th>
+<th>Implementación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Login FirebaseUI personalizado, logo y español</td>
+<td><code>LoginActivity</code>, <code>firebase_login.xml</code>, <code>ic_estudio.xml</code>, <code>EstudioApp</code></td>
+</tr>
+<tr>
+<td>Listado personal en tiempo real y cerrar sesión</td>
+<td><code>SesionesActivity</code>, <code>SesionAdapter</code>, <code>activity_sesiones.xml</code></td>
+</tr>
+<tr>
+<td>Agregar y editar en una pantalla propia</td>
+<td><code>FormularioSesionActivity</code> y <code>activity_formulario_sesion.xml</code></td>
+</tr>
+<tr>
+<td>Eliminar una sesión</td>
+<td>Confirmación en el listado y eliminación en Firestore</td>
+</tr>
+<tr>
+<td>Barras con horas por mes</td>
+<td><code>GraficosActivity</code>, <code>GraficoHorasView</code>, <code>EstadisticasEstudio.porMes</code></td>
+</tr>
+<tr>
+<td>Torta con proporción de horas por actividad</td>
+<td><code>EstadisticasEstudio.porActividad</code>; suma horas decimales</td>
+</tr>
+<tr>
+<td>Filtrar ambos gráficos por curso</td>
+<td>Un selector compartido alimenta ambos gráficos y el total</td>
+</tr>
+<tr>
+<td>Cada usuario solo ve sus sesiones</td>
+<td>Ruta bajo UID y reglas de servidor</td>
+</tr>
+</tbody></table>
+<p>Los meses se agrupan por <strong>año-mes</strong>, por ejemplo <code>2026-11</code>, para no mezclar noviembre de años distintos. Los cálculos suman <strong>horas</strong>, no cantidades de documentos. El filtro admite «Todos los cursos» y agrupa nombres de curso sin duplicarlos únicamente por mayúsculas.</p>
+<h2>Datos y validación</h2>
+<pre><code class="language-text">usuarios/{uid}/sesiones/{idAutomatico}
+  curso: &quot;Servicios y Aplicaciones para IoT&quot;
+  fecha: &quot;2026-11-17&quot;
+  horas: 1.5
+  tipoActividad: &quot;Laboratorio&quot;
+</code></pre>
+<p><code>fecha</code> es texto ISO <code>yyyy-MM-dd</code>; la pantalla la muestra <code>dd/MM/yyyy</code>. <code>horas</code> es un número, admite decimales y debe ser mayor que 0 y como máximo 24 por sesión. El formulario acepta coma o punto decimal. Actividades permitidas: <strong>Teoría</strong>, <strong>Práctica</strong>, <strong>Laboratorio</strong>. Curso obligatorio de hasta 100 caracteres.</p>
+<p>El identificador del documento no se guarda como un quinto campo. Los campos se serializan explícitamente desde <code>SesionEstudio.datos()</code>. El servidor valida los cuatro campos y rechaza campos extra, horas fuera del rango y accesos de otros usuarios. La app indica cuándo muestra caché o hay escrituras pendientes; guardar en servidor requiere recuperar la conexión.</p>
+<p>Las reglas no se publican al compilar el APK: ya se publicaron en este proyecto. Si se reutiliza otro Firebase, publicar allí el contenido de <code>firestore.rules</code>. Nunca resolver un error de permisos con una regla global pública.</p>
+<h2>Compilación y pruebas</h2>
+<table>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Versión</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AGP</td>
+<td>9.0.0</td>
+</tr>
+<tr>
+<td>Gradle wrapper</td>
+<td>9.1.0</td>
+</tr>
+<tr>
+<td>compileSdk / targetSdk</td>
+<td>36 / 36</td>
+</tr>
+<tr>
+<td>minSdk</td>
+<td>34</td>
+</tr>
+<tr>
+<td>Nivel del código Java</td>
+<td>11</td>
+</tr>
+<tr>
+<td>FirebaseUI</td>
+<td>9.1.1</td>
+</tr>
+</tbody></table>
+<p>En Git Bash:</p>
+<pre><code class="language-bash">./gradlew.bat :app:assembleDebug testDebugUnitTest lintDebug
+./gradlew.bat signingReport
+</code></pre>
+<p>En PowerShell:</p>
+<pre><code class="language-powershell">.\gradlew.bat :app:assembleDebug testDebugUnitTest lintDebug
+</code></pre>
+<p>Revisar <a href="#contexto">CONTEXTO_COMPILACION_LAB.md</a> si el IDE no admite el plugin, falta SDK/JDK o falla la sincronización. La <a href="#codigo">guía offline con todas las fuentes</a> reúne README, contexto y código de esta versión.</p>
+<p>Las 8 pruebas unitarias cubren horas decimales, filtrado, meses de años diferentes, validación y estado vacío. Las pruebas instrumentadas verifican el CRUD contra Firebase real, rechazo de accesos de otro usuario, listener en tiempo real, formularios, gráficos y flujos de FirebaseUI. Crean únicamente sus propias cuentas ficticias/documentos y los retiran al finalizar.</p>
+<pre><code class="language-bash"># Solo contra lab6-20230420, con Internet y un dispositivo conectado:
+./gradlew.bat connectedDebugAndroidTest
+</code></pre>
+<p>El login interactivo de Google con una cuenta personal/institucional requiere comprobación manual en el dispositivo; no se simula una sesión de Google como prueba exitosa.</p>
+<h2>Probar manualmente</h2>
+<ol>
+<li>Crear cuenta por correo, cerrar sesión y entrar otra vez. Abrir recuperación sin compartir la contraseña.</li>
+<li>Probar Google con una cuenta y la firma registrada del dispositivo/PC.</li>
+<li>Crear sesiones de dos cursos, con diferentes actividades y meses; incluir 1,5 horas.</li>
+<li>Editar curso, fecha, horas y actividad. Verificar el cambio en el listado y en Firestore.</li>
+<li>Filtrar por cada curso y comprobar que cambian barras, torta y total.</li>
+<li>Eliminar con confirmación. Probar que una sesión cancelada no se elimina.</li>
+<li>Entrar con otro usuario y comprobar que no aparecen datos de la primera cuenta.</li>
+</ol>
+<h2>GitHub y revisión</h2>
+<p>Repositorio de esta versión: <a href="https://github.com/a20230420/LAB6_20230420_ESTUDIO">a20230420/LAB6_20230420_ESTUDIO</a>. Se utiliza ese nombre para distinguirla del repositorio <code>LAB6_20230420</code> que ya existía en la cuenta. <code>app/</code>, <code>gradle/</code>, <code>settings.gradle</code> y los demás archivos de compilación se encuentran directamente en la raíz; al clonar, abrir esa raíz completa en Android Studio.</p>
+<p>Se publican código, XML, wrapper y reglas, manteniendo fuera <code>google-services.json</code>, <code>local.properties</code>, cachés, builds y claves privadas. Llevar el JSON por separado a la PC del laboratorio y copiarlo en <code>app/</code>. El enunciado original solicita el nombre <code>LAB6_20230420</code> para su entrega; esta copia de estudio se distingue con el sufijo <code>_ESTUDIO</code>.</p>
+<p>El PDF también pide visibilidad pública e invitar a <code>angie.alejandro@pucp.edu.pe</code> a Firebase para revisar. Este repositorio de estudio es público. <strong>No se ha enviado esa invitación a Firebase.</strong> Si se vuelve a entregar bajo esas condiciones, revisar los permisos necesarios y realizar esa invitación personalmente o autorizarla de manera explícita.</p>
+</section><section id="contexto"><h1>Contexto de LAB6_20230420 para otra PC o una modificación posterior</h1>
+<h2>Objetivo y ubicación</h2>
+<p>Esta carpeta contiene el <strong>Lab6 real de sesiones de estudio</strong>, de 1TEL05 2026-2. Es la base de trabajo para un laboratorio posterior. No confundir con el ejemplo de inventario que está en la carpeta hermana <code>PracticaLab6</code>.</p>
+<p>Java + XML + Groovy, cuatro pantallas: login, listado, formulario agregar/editar y gráficos. FirebaseUI 9.1.1 para correo/contraseña y Google; Cloud Firestore para los datos privados. Las funciones de este Lab6 se describen en README.</p>
+<h2>Valores que deben conservarse al abrir</h2>
+<ul>
+<li>Raíz: carpeta que contiene <code>settings.gradle</code>, <code>gradlew.bat</code> y <code>app/</code>.</li>
+<li>Módulo: <code>app</code>.</li>
+<li>Namespace y applicationId: <strong><code>com.example.lab06_20230420</code></strong>.</li>
+<li>Firebase elegido: <strong><code>lab6-20230420</code></strong> (no lleva el cero de <code>lab06</code>).</li>
+<li>AGP <strong>9.0.0</strong> en <code>build.gradle</code> raíz.</li>
+<li>Gradle <strong>9.1.0</strong> en <code>gradle/wrapper/gradle-wrapper.properties</code>, con su checksum asociado.</li>
+<li>compileSdk/targetSdk <strong>36</strong>, minSdk <strong>34</strong> (Android 14).</li>
+<li>Código Java <strong>11</strong>, Gradle JDK compatible; JDK <strong>21</strong> sirve para este conjunto. El proyecto se compiló localmente con el JBR 25 instalado.</li>
+<li><code>buildFeatures { viewBinding true }</code>.</li>
+<li>Repositorios <code>google()</code> y <code>mavenCentral()</code>; plugins también <code>gradlePluginPortal()</code>.</li>
+</ul>
+<p>Una captura anterior del laboratorio indicaba que su IDE admitía hasta AGP <strong>9.1.0</strong> y rechazaba AGP <strong>9.3.3</strong>. Por eso esta base conserva AGP 9.0.0. La versión del IDE instalado el día de uso se debe comprobar si vuelve a fallar.</p>
+<h2>Cambiar la configuración según el error</h2>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Ajuste</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IDE no admite AGP</td>
+<td>Revisar <code>build.gradle</code> raíz y máximo permitido por ese Studio. Restaurar 9.0.0 si una actualización cambió el valor.</td>
+</tr>
+<tr>
+<td>Gradle incompatible con AGP</td>
+<td>Conservar el wrapper 9.1.0 para AGP 9.0.0. Si se cambia la distribución, revisar también el SHA-256 de su ZIP.</td>
+</tr>
+<tr>
+<td>Error de JDK/JAVA_HOME</td>
+<td>Settings &gt; Build, Execution, Deployment &gt; Build Tools &gt; Gradle &gt; Gradle JDK. Usar un JDK compatible instalado en esa PC, por ejemplo 21.</td>
+</tr>
+<tr>
+<td>SDK location not found</td>
+<td>Configurar el SDK local. No copiar la ruta de <code>local.properties</code> de otra PC.</td>
+</tr>
+<tr>
+<td>Falta android-36</td>
+<td>Instalar SDK Platform 36 y Build Tools 36.0.0. minSdk 34 no reemplaza compileSdk 36.</td>
+</tr>
+<tr>
+<td>Dependencia exige compileSdk mayor</td>
+<td>Leer cuál lo pide. No bajar compileSdk a 34 para hacerlo coincidir con el emulador.</td>
+</tr>
+<tr>
+<td>Could not resolve / timeout</td>
+<td>Internet, proxy, repositorios o modo offline de Gradle. Un clon nuevo necesita descargar dependencias.</td>
+</tr>
+<tr>
+<td>No matching client found for package name</td>
+<td>El JSON debe contener exactamente <code>com.example.lab06_20230420</code>. Descargar el de la app registrada correcta.</td>
+</tr>
+<tr>
+<td>Falta JSON / default_web_client_id</td>
+<td>Agregar <code>app/google-services.json</code> actualizado después de habilitar Google y registrar SHA. Sin OAuth válido el login muestra un aviso.</td>
+</tr>
+<tr>
+<td>Google falla solo en lab</td>
+<td>Ejecutar <code>signingReport</code>, registrar las huellas de ESA firma y actualizar el JSON. No bajar AGP para corregir OAuth.</td>
+</tr>
+<tr>
+<td>Firestore PERMISSION_DENIED</td>
+<td>Revisar usuario, ruta <code>usuarios/uid/sesiones</code> y reglas. No abrir públicamente la base.</td>
+</tr>
+<tr>
+<td>Run deshabilitado</td>
+<td>Resolver Gradle Sync y abrir la raíz completa, luego seleccionar <code>app</code>.</td>
+</tr>
+</tbody></table>
+<p>El <code>google-services.json</code> local está excluido de Git y se lleva por separado. Esta versión no necesita <code>facebook-config.properties</code>. No guardar cuentas de servicio ni claves privadas dentro del APK o repositorio.</p>
+<p>No existe un cambio universal de una sola propiedad: elegir el ajuste por el mensaje de error, conservando un conjunto compatible de IDE + AGP + wrapper + JDK + SDK y dependencias.</p>
+<h2>Diagnosticar y verificar</h2>
+<p>En Git Bash:</p>
+<pre><code class="language-bash">./gradlew.bat --version
+./gradlew.bat :app:assembleDebug --stacktrace
+</code></pre>
+<p>En PowerShell:</p>
+<pre><code class="language-powershell">.\gradlew.bat --version
+.\gradlew.bat :app:assembleDebug --stacktrace
+</code></pre>
+<p>Al pedir ayuda, incluir versión de Android Studio, salida de <code>--version</code> y el primer bloque <code>What went wrong</code>/causa relevante. No compartir contraseñas ni claves privadas. Confirmar que la app abre en API 34 o superior después del ajuste.</p>
+<h2>Mapa de clases</h2>
+<ul>
+<li><code>EstudioApp</code>: idioma español para toda la app, incluidas las pantallas FirebaseUI.</li>
+<li><code>LoginActivity</code>: FirebaseUI con <code>firebase_login.xml</code>, logo, correo y Google, retorno a la sesión existente.</li>
+<li><code>PantallaPrivada</code>: comprueba identidad, redirige si cambia el usuario y aplica insets.</li>
+<li><code>SesionesActivity</code>: lista, listeners de ciclo de vida, alta/edición, confirmación de borrado y cierre de sesión.</li>
+<li><code>SesionAdapter</code>: tarjetas en RecyclerView, fecha/horas/actividad y botones.</li>
+<li><code>FormularioSesionActivity</code>: alta/edición con fecha ISO, curso, horas decimales y actividad.</li>
+<li><code>GraficosActivity</code>: filtro por curso que alimenta ambos gráficos.</li>
+<li><code>GraficoHorasView</code>: barras y torta con Canvas, descripción para accesibilidad.</li>
+<li><code>EstadisticasEstudio</code>: validación, filtrado y <strong>suma de horas</strong>, agrupando meses por año-mes.</li>
+<li><code>SesionRepository</code>: operaciones Firestore bajo UID; recibe snapshots con metadatos de caché y escrituras pendientes.</li>
+<li><code>SesionEstudio</code>: cuatro campos Firestore; ID obtenido del documento.</li>
+<li><code>firestore.rules</code>: autorización real en servidor y validación del esquema.</li>
+</ul>
+<p>Conservar la separación entre presentación, cálculos y acceso a datos al modificar la base. Cambiar la configuración de compilación no requiere migrar la app a Kotlin o Compose.</p>
+</section><section id="codigo"><h1>Fuentes de LAB6_20230420</h1>
+<p>Código de sesiones de estudio. Los archivos reales del proyecto son los que compila Android. No incluye google-services.json ni claves privadas.</p>
+<h2>app/src/main/AndroidManifest.xml</h2>
+<pre><code class="language-xml">&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;
+    &lt;uses-permission android:name=&quot;android.permission.INTERNET&quot;/&gt;
+    &lt;application android:name=&quot;.EstudioApp&quot; android:theme=&quot;@style/Theme.Estudio&quot; android:label=&quot;@string/app_name&quot; android:icon=&quot;@drawable/ic_estudio&quot; android:allowBackup=&quot;false&quot; android:supportsRtl=&quot;true&quot;&gt;
+        &lt;activity android:name=&quot;.GraficosActivity&quot; android:exported=&quot;false&quot;/&gt;
+        &lt;activity android:name=&quot;.FormularioSesionActivity&quot; android:exported=&quot;false&quot; android:windowSoftInputMode=&quot;adjustResize&quot;/&gt;
+        &lt;activity android:name=&quot;.SesionesActivity&quot; android:exported=&quot;false&quot;/&gt;
+        &lt;activity android:name=&quot;.LoginActivity&quot; android:exported=&quot;true&quot;&gt;
+            &lt;intent-filter&gt;&lt;action android:name=&quot;android.intent.action.MAIN&quot;/&gt;&lt;category android:name=&quot;android.intent.category.LAUNCHER&quot;/&gt;&lt;/intent-filter&gt;
+        &lt;/activity&gt;
+    &lt;/application&gt;
+&lt;/manifest&gt;
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/EstadisticasEstudio.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.*;
+
+public final class EstadisticasEstudio {
+    public static final String[] ACTIVIDADES={&quot;Teoría&quot;,&quot;Práctica&quot;,&quot;Laboratorio&quot;};
+    private EstadisticasEstudio() { }
+    public static String cursoLimpio(String curso) { return curso==null?&quot;&quot;:curso.trim().replaceAll(&quot;\\s+&quot;,&quot; &quot;); }
+    public static double leerHoras(String texto) {
+        String value=texto.trim().replace(&#39;,&#39;,&#39;.&#39;);
+        if(!value.matches(&quot;[0-9]+(?:\\.[0-9]+)?&quot;)) throw new IllegalArgumentException(&quot;Ingresa horas numéricas; puedes usar coma o punto decimal.&quot;);
+        double horas=Double.parseDouble(value);
+        if(!Double.isFinite(horas)||horas&lt;=0||horas&gt;24) throw new IllegalArgumentException(&quot;Las horas deben ser mayores que 0 y como máximo 24 por sesión.&quot;);
+        return horas;
+    }
+    public static void validar(SesionEstudio s) {
+        if(cursoLimpio(s.getCurso()).isEmpty()||s.getCurso().length()&gt;100) throw new IllegalArgumentException(&quot;Ingresa un curso de hasta 100 caracteres.&quot;);
+        try { if(!s.getFecha().matches(&quot;[0-9]{4}-[0-9]{2}-[0-9]{2}&quot;))throw new IllegalArgumentException();LocalDate.parse(s.getFecha()); } catch(Exception e) { throw new IllegalArgumentException(&quot;Selecciona una fecha válida.&quot;); }
+        if(!Double.isFinite(s.getHoras())||s.getHoras()&lt;=0||s.getHoras()&gt;24) throw new IllegalArgumentException(&quot;Las horas deben estar entre más de 0 y 24.&quot;);
+        if(!Arrays.asList(ACTIVIDADES).contains(s.getTipoActividad())) throw new IllegalArgumentException(&quot;Selecciona un tipo de actividad válido.&quot;);
+    }
+    public static List&lt;SesionEstudio&gt; filtrar(List&lt;SesionEstudio&gt; todas,String curso) {
+        List&lt;SesionEstudio&gt; r=new ArrayList&lt;&gt;();
+        for(SesionEstudio s:todas) if(curso==null||cursoLimpio(s.getCurso()).equalsIgnoreCase(cursoLimpio(curso))) r.add(s);
+        return r;
+    }
+    public static List&lt;String&gt; cursos(List&lt;SesionEstudio&gt; sesiones) {
+        Set&lt;String&gt; cursos=new TreeSet&lt;&gt;(String.CASE_INSENSITIVE_ORDER);
+        for(SesionEstudio s:sesiones) cursos.add(cursoLimpio(s.getCurso()));
+        return new ArrayList&lt;&gt;(cursos);
+    }
+    public static Map&lt;String,Double&gt; porMes(List&lt;SesionEstudio&gt; sesiones) {
+        Map&lt;String,Double&gt; r=new TreeMap&lt;&gt;();
+        for(SesionEstudio s:sesiones) r.merge(YearMonth.from(LocalDate.parse(s.getFecha())).toString(),s.getHoras(),Double::sum);
+        return r;
+    }
+    public static Map&lt;String,Double&gt; porActividad(List&lt;SesionEstudio&gt; sesiones) {
+        Map&lt;String,Double&gt; r=new LinkedHashMap&lt;&gt;();
+        for(String actividad:ACTIVIDADES) r.put(actividad,0d);
+        for(SesionEstudio s:sesiones) r.merge(s.getTipoActividad(),s.getHoras(),Double::sum);
+        return r;
+    }
+    public static double total(List&lt;SesionEstudio&gt; sesiones) { double t=0; for(SesionEstudio s:sesiones)t+=s.getHoras();return t; }
+    public static String horas(double value) { return String.format(new Locale(&quot;es&quot;,&quot;PE&quot;),&quot;%.2f&quot;,value).replaceAll(&quot;0+$&quot;,&quot;&quot;).replaceAll(&quot;[.,]$&quot;,&quot;&quot;); }
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/EstudioApp.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+import android.app.Application;
+import android.app.LocaleManager;
+import android.os.LocaleList;
+public class EstudioApp extends Application {
+    @Override public void onCreate() {
+        super.onCreate();
+        getSystemService(LocaleManager.class).setApplicationLocales(LocaleList.forLanguageTags(&quot;es&quot;));
+    }
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/FormularioSesionActivity.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import android.app.DatePickerDialog;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import com.example.lab06_20230420.databinding.ActivityFormularioSesionBinding;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+
+public class FormularioSesionActivity extends PantallaPrivada {
+    private ActivityFormularioSesionBinding binding;
+    private String id;
+    private boolean editar, ocupada, cargada;
+    private LocalDate fecha=LocalDate.now();
+    @Override protected void onCreate(Bundle saved){
+        super.onCreate(saved);if(isFinishing()||repository==null)return;
+        binding=ActivityFormularioSesionBinding.inflate(getLayoutInflater());setContentView(binding.getRoot());ajustarBarras();
+        binding.tipo.setAdapter(new ArrayAdapter&lt;&gt;(this,android.R.layout.simple_spinner_dropdown_item,EstadisticasEstudio.ACTIVIDADES));
+        String existente=getIntent().getStringExtra(&quot;sesionId&quot;);editar=existente!=null;
+        id=editar?existente:saved!=null?saved.getString(&quot;nuevoId&quot;):repository.nuevoId();
+        if(id==null||!id.matches(&quot;[A-Za-z0-9_-]{1,150}&quot;)){aviso(&quot;Identificador de sesión inválido.&quot;);finish();return;}
+        binding.titulo.setText(editar?&quot;Editar sesión&quot;:&quot;Nueva sesión&quot;);
+        binding.volver.setOnClickListener(v-&gt;finish());binding.fecha.setOnClickListener(v-&gt;elegirFecha());binding.guardar.setOnClickListener(v-&gt;guardar());
+        if(saved!=null&amp;&amp;saved.getBoolean(&quot;cargada&quot;)){cargada=true;fecha=LocalDate.parse(saved.getString(&quot;fecha&quot;));mostrarFecha();}
+        else if(editar)cargar(); else {cargada=true;mostrarFecha();}
+    }
+    private void elegirFecha(){if(ocupada)return;new DatePickerDialog(this,(v,a,m,d)-&gt;{fecha=LocalDate.of(a,m+1,d);mostrarFecha();},fecha.getYear(),fecha.getMonthValue()-1,fecha.getDayOfMonth()).show();}
+    private void mostrarFecha(){binding.fecha.setText(fecha.format(DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy&quot;)));}
+    private void cargando(boolean valor){ocupada=valor;binding.guardar.setEnabled(!valor);binding.curso.setEnabled(!valor);binding.horas.setEnabled(!valor);binding.tipo.setEnabled(!valor);binding.fecha.setEnabled(!valor);}
+    private void cargar(){
+        cargando(true);binding.error.setText(&quot;Cargando sesión…&quot;);
+        repository.buscar(id).addOnCompleteListener(this,t-&gt;{
+            if(!t.isSuccessful()){binding.error.setText(&quot;No se pudo cargar. Vuelve a la lista e intenta de nuevo.&quot;);return;}
+            if(t.getResult()==null||!t.getResult().exists()){aviso(&quot;Esta sesión ya no existe.&quot;);finish();return;}
+            try {
+                SesionEstudio s=t.getResult().toObject(SesionEstudio.class);if(s==null)throw new IllegalStateException();EstadisticasEstudio.validar(s);
+                binding.curso.setText(s.getCurso());binding.horas.setText(EstadisticasEstudio.horas(s.getHoras()));
+                binding.tipo.setSelection(Arrays.asList(EstadisticasEstudio.ACTIVIDADES).indexOf(s.getTipoActividad()));
+                fecha=LocalDate.parse(s.getFecha());mostrarFecha();binding.error.setText(&quot;&quot;);cargada=true;cargando(false);
+            }catch(Exception e){binding.error.setText(&quot;La sesión tiene datos inválidos. Revisa el documento en Firestore.&quot;);}
+        });
+    }
+    private void guardar(){
+        if(ocupada)return;
+        SesionEstudio s;
+        try {
+            s=new SesionEstudio(id,EstadisticasEstudio.cursoLimpio(binding.curso.getText().toString()),fecha.toString(),
+                EstadisticasEstudio.leerHoras(binding.horas.getText().toString()),binding.tipo.getSelectedItem().toString());
+            EstadisticasEstudio.validar(s);
+        }catch(IllegalArgumentException e){binding.error.setText(e.getMessage());return;}
+        cargando(true);binding.error.setText(&quot;Guardando en Firestore… Si no hay conexión, espera a recuperarla.&quot;);
+        repository.guardar(s,editar).addOnCompleteListener(this,t-&gt;{
+            if(t.isSuccessful()){aviso(editar?&quot;Sesión actualizada.&quot;:&quot;Sesión registrada.&quot;);finish();}
+            else{cargando(false);binding.error.setText(&quot;No se pudo guardar. Revisa conexión y permisos. Si la sesión fue eliminada, vuelve a la lista.&quot;);}
+        });
+    }
+    @Override protected void onSaveInstanceState(Bundle out){if(binding!=null){out.putString(&quot;fecha&quot;,fecha.toString());out.putString(&quot;nuevoId&quot;,id);out.putBoolean(&quot;cargada&quot;,cargada);}super.onSaveInstanceState(out);}
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/GraficoHorasView.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import android.content.Context;
+import android.graphics.*;
+import android.view.View;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+/** Representa SUMAS DE HORAS: nunca cuenta documentos para calcular estos gráficos. */
+public class GraficoHorasView extends View {
+    private final Map&lt;String,Double&gt; valores;
+    private final boolean circular;
+    private final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final int[] colores={0xff2454b7,0xffe79a35,0xff16978d};
+    public GraficoHorasView(Context context,Map&lt;String,Double&gt; valores,boolean circular){
+        super(context);this.valores=new LinkedHashMap&lt;&gt;(valores);this.circular=circular;
+        setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+        StringBuilder descripcion=new StringBuilder(circular?&quot;Horas por actividad. &quot;:&quot;Horas por mes. &quot;);
+        for(Map.Entry&lt;String,Double&gt; e:valores.entrySet())descripcion.append(etiqueta(e.getKey())).append(&quot;: &quot;).append(EstadisticasEstudio.horas(e.getValue())).append(&quot; horas. &quot;);
+        setContentDescription(descripcion.toString());
+    }
+    public int alturaDp(){return circular?340:Math.max(90,valores.size()*56+16);}
+    private String etiqueta(String key){return circular?key:YearMonth.parse(key).format(DateTimeFormatter.ofPattern(&quot;MMM yyyy&quot;,new Locale(&quot;es&quot;,&quot;PE&quot;)));}
+    @Override protected void onDraw(Canvas canvas){
+        super.onDraw(canvas);float d=getResources().getDisplayMetrics().density;
+        paint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.NORMAL));paint.setTextSize(13*d);
+        double total=0,max=0;for(double n:valores.values()){total+=n;max=Math.max(max,n);}
+        if(total&lt;=0){paint.setColor(0xff59667a);canvas.drawText(&quot;Sin horas para este curso&quot;,12*d,36*d,paint);return;}
+        if(circular){
+            float size=Math.min(getWidth()-32*d,200*d),left=(getWidth()-size)/2;
+            RectF box=new RectF(left,12*d,left+size,12*d+size);float angulo=-90;int i=0;
+            for(Map.Entry&lt;String,Double&gt; e:valores.entrySet()){
+                paint.setColor(colores[i%colores.length]);float arco=(float)(360*e.getValue()/total);
+                if(arco&gt;0)canvas.drawArc(box,angulo,arco,true,paint);angulo+=arco;
+                float y=size+44*d+i*28*d;canvas.drawRoundRect(12*d,y-12*d,24*d,y,3*d,3*d,paint);
+                paint.setColor(0xff172944);canvas.drawText(e.getKey()+&quot;: &quot;+EstadisticasEstudio.horas(e.getValue())+&quot; h (&quot;+Math.round(100*e.getValue()/total)+&quot;%)&quot;,32*d,y,paint);i++;
+            }
+        }else{
+            int i=0;float ancho=Math.max(0,getWidth()-24*d);
+            for(Map.Entry&lt;String,Double&gt; e:valores.entrySet()){
+                float y=12*d+i*56*d;paint.setColor(0xff172944);canvas.drawText(etiqueta(e.getKey()),12*d,y+13*d,paint);
+                String horas=EstadisticasEstudio.horas(e.getValue())+&quot; h&quot;;
+                canvas.drawText(horas,getWidth()-12*d-paint.measureText(horas),y+13*d,paint);
+                paint.setColor(0xffe7edf8);canvas.drawRoundRect(12*d,y+23*d,12*d+ancho,y+37*d,5*d,5*d,paint);
+                paint.setColor(colores[0]);canvas.drawRoundRect(12*d,y+23*d,12*d+(float)(ancho*e.getValue()/max),y+37*d,5*d,5*d,paint);i++;
+            }
+        }
+    }
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/GraficosActivity.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import com.example.lab06_20230420.databinding.ActivityGraficosBinding;
+import com.google.firebase.firestore.ListenerRegistration;
+import java.util.*;
+
+public class GraficosActivity extends PantallaPrivada {
+    private ActivityGraficosBinding binding;
+    private ListenerRegistration listener;
+    private List&lt;SesionEstudio&gt; sesiones=new ArrayList&lt;&gt;();
+    private String curso;
+    private boolean preparando;
+    @Override protected void onCreate(Bundle saved){
+        super.onCreate(saved);if(isFinishing()||repository==null)return;
+        binding=ActivityGraficosBinding.inflate(getLayoutInflater());setContentView(binding.getRoot());ajustarBarras();
+        if(saved!=null)curso=saved.getString(&quot;curso&quot;);
+        binding.volver.setOnClickListener(v-&gt;finish());binding.reintentar.setOnClickListener(v-&gt;escuchar());
+        binding.filtroCurso.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            @Override public void onNothingSelected(AdapterView&lt;?&gt; p){}
+            @Override public void onItemSelected(AdapterView&lt;?&gt; p,View v,int posicion,long id){
+                if(preparando)return;
+                curso=posicion==0?null:(String)p.getItemAtPosition(posicion);dibujar();
+            }
+        });
+    }
+    @Override protected void onStart(){super.onStart();if(binding!=null&amp;&amp;!isFinishing())escuchar();}
+    @Override protected void onStop(){detener();super.onStop();}
+    private void detener(){if(listener!=null){listener.remove();listener=null;}}
+    private void escuchar(){
+        detener();binding.estado.setText(&quot;Cargando horas de estudio…&quot;);binding.reintentar.setVisibility(View.GONE);
+        listener=repository.escuchar((datos,cache,pendientes,error)-&gt;{
+            if(error!=null){binding.estado.setText(&quot;No se pudieron cargar los gráficos. Revisa conexión y reglas de Firestore.&quot;);binding.reintentar.setVisibility(View.VISIBLE);return;}
+            sesiones=datos;actualizarCursos();dibujar();
+            binding.estado.setText(pendientes?&quot;Hay cambios pendientes de sincronizar.&quot;:cache?&quot;Gráficos calculados con la caché; esperando al servidor.&quot;:&quot;Gráficos actualizados en tiempo real&quot;);
+        });
+    }
+    private void actualizarCursos(){
+        preparando=true;
+        List&lt;String&gt; opciones=new ArrayList&lt;&gt;();opciones.add(&quot;Todos los cursos&quot;);opciones.addAll(EstadisticasEstudio.cursos(sesiones));
+        int seleccion=0;
+        if(curso!=null){for(int i=1;i&lt;opciones.size();i++)if(opciones.get(i).equalsIgnoreCase(curso)){seleccion=i;break;}}
+        curso=seleccion==0?null:opciones.get(seleccion);
+        binding.filtroCurso.setAdapter(new ArrayAdapter&lt;&gt;(this,android.R.layout.simple_spinner_dropdown_item,opciones));binding.filtroCurso.setSelection(seleccion);preparando=false;
+    }
+    private void dibujar(){
+        List&lt;SesionEstudio&gt; filtradas=EstadisticasEstudio.filtrar(sesiones,curso);
+        binding.resumen.setText(EstadisticasEstudio.horas(EstadisticasEstudio.total(filtradas))+&quot; horas · &quot;+filtradas.size()+(filtradas.size()==1?&quot; sesión&quot;:&quot; sesiones&quot;));
+        grafico(binding.barras,EstadisticasEstudio.porMes(filtradas),false);
+        grafico(binding.torta,EstadisticasEstudio.porActividad(filtradas),true);
+    }
+    private void grafico(FrameLayout contenedor,Map&lt;String,Double&gt; datos,boolean circular){
+        contenedor.removeAllViews();GraficoHorasView grafico=new GraficoHorasView(this,datos,circular);
+        contenedor.addView(grafico,new FrameLayout.LayoutParams(-1,(int)(getResources().getDisplayMetrics().density*grafico.alturaDp())));
+    }
+    @Override protected void onSaveInstanceState(Bundle out){out.putString(&quot;curso&quot;,curso);super.onSaveInstanceState(out);}
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/LoginActivity.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.appcompat.app.AppCompatActivity;
+import com.example.lab06_20230420.databinding.ActivityLoginBinding;
+import com.firebase.ui.auth.*;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import java.util.Arrays;
+
+/** FirebaseUI se encarga de registro, contraseña e inicio por correo/Google. */
+public class LoginActivity extends AppCompatActivity {
+    private ActivityLoginBinding binding;
+    private FirebaseAuth auth;
+    private final ActivityResultLauncher&lt;Intent&gt; launcher=registerForActivityResult(
+        new FirebaseAuthUIActivityResultContract(),result-&gt;{
+            if(auth!=null&amp;&amp;auth.getCurrentUser()!=null){entrar();return;}
+            binding.abrirAcceso.setEnabled(true);
+            binding.estadoLogin.setText(result.getIdpResponse()==null?&quot;Acceso cancelado. Puedes intentarlo de nuevo.&quot;:&quot;No se completó el acceso. Revisa la conexión y la configuración del proveedor.&quot;);
+        });
+    @Override protected void onCreate(Bundle saved){
+        super.onCreate(saved);binding=ActivityLoginBinding.inflate(getLayoutInflater());setContentView(binding.getRoot());
+        if(FirebaseApp.initializeApp(this)!=null){auth=FirebaseAuth.getInstance();auth.setLanguageCode(&quot;es&quot;);}
+        if(auth!=null&amp;&amp;auth.getCurrentUser()!=null){entrar();return;}
+        binding.abrirAcceso.setOnClickListener(v-&gt;abrir());
+        if(auth==null)binding.estadoLogin.setText(&quot;Falta app/google-services.json de Lab6-20230420. Consulta README para conectar Firebase.&quot;);
+        else if(saved==null)abrir();
+    }
+    private void abrir(){
+        if(auth==null)return;
+        if(getResources().getIdentifier(&quot;default_web_client_id&quot;,&quot;string&quot;,getPackageName())==0){
+            binding.estadoLogin.setText(&quot;El archivo Firebase todavía no contiene la configuración de Google. Habilita Google, registra la firma SHA y descarga google-services.json actualizado; luego sincroniza y ejecuta otra vez.&quot;);return;
+        }
+        binding.abrirAcceso.setEnabled(false);
+        AuthMethodPickerLayout layout=new AuthMethodPickerLayout.Builder(R.layout.firebase_login)
+            .setEmailButtonId(R.id.accesoCorreo).setGoogleButtonId(R.id.accesoGoogle).build();
+        Intent intent=AuthUI.getInstance().createSignInIntentBuilder()
+            .setAvailableProviders(Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().setRequireName(false).build(),new AuthUI.IdpConfig.GoogleBuilder().build()))
+            .setAuthMethodPickerLayout(layout).setTheme(R.style.Theme_Estudio_Auth)
+            .setLogo(R.drawable.ic_estudio).setCredentialManagerEnabled(false).build();
+        launcher.launch(intent);
+    }
+    private void entrar(){startActivity(new Intent(this,SesionesActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));finish();}
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/PantallaPrivada.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.*;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.*;
+
+public abstract class PantallaPrivada extends AppCompatActivity {
+    protected FirebaseAuth auth;
+    protected SesionRepository repository;
+    private String uid;
+    private final FirebaseAuth.AuthStateListener cambio=a-&gt;{if(a.getCurrentUser()==null||!a.getCurrentUser().getUid().equals(uid)) salir();};
+    @Override protected void onCreate(Bundle saved) {
+        super.onCreate(saved);
+        if(FirebaseApp.initializeApp(this)==null){salir();return;}
+        auth=FirebaseAuth.getInstance();
+        if(auth.getCurrentUser()==null){salir();return;}
+        uid=auth.getCurrentUser().getUid();repository=new SesionRepository(uid);
+    }
+    @Override protected void onStart(){super.onStart();if(auth!=null)auth.addAuthStateListener(cambio);}
+    @Override protected void onStop(){if(auth!=null)auth.removeAuthStateListener(cambio);super.onStop();}
+    protected void salir(){startActivity(new Intent(this,LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));finish();}
+    protected void aviso(String texto){Toast.makeText(this,texto,Toast.LENGTH_LONG).show();}
+    protected void ajustarBarras(){ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main),(v,insets)-&gt;{
+        androidx.core.graphics.Insets b=insets.getInsets(WindowInsetsCompat.Type.systemBars()|WindowInsetsCompat.Type.ime());
+        v.setPadding(b.left,b.top,b.right,b.bottom);return insets;
+    });}
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/SesionAdapter.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import android.content.res.ColorStateList;
+import android.view.*;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.lab06_20230420.databinding.FilaSesionBinding;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+public class SesionAdapter extends RecyclerView.Adapter&lt;SesionAdapter.Fila&gt; {
+    public interface Acciones { void editar(SesionEstudio s); void eliminar(SesionEstudio s); }
+    private final List&lt;SesionEstudio&gt; sesiones=new ArrayList&lt;&gt;();
+    private final Acciones acciones;
+    public SesionAdapter(Acciones acciones){this.acciones=acciones;}
+    public void mostrar(List&lt;SesionEstudio&gt; datos){sesiones.clear();sesiones.addAll(datos);notifyDataSetChanged();}
+    static class Fila extends RecyclerView.ViewHolder {
+        final FilaSesionBinding b;
+        Fila(FilaSesionBinding binding){super(binding.getRoot());b=binding;}
+    }
+    @NonNull @Override public Fila onCreateViewHolder(@NonNull ViewGroup p,int type){return new Fila(FilaSesionBinding.inflate(LayoutInflater.from(p.getContext()),p,false));}
+    @Override public void onBindViewHolder(@NonNull Fila f,int position){
+        SesionEstudio s=sesiones.get(position);
+        f.b.curso.setText(s.getCurso());
+        f.b.detalle.setText(LocalDate.parse(s.getFecha()).format(DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy&quot;))+&quot; · &quot;+EstadisticasEstudio.horas(s.getHoras())+&quot; h&quot;);
+        f.b.actividad.setText(s.getTipoActividad());
+        int color=s.getTipoActividad().equals(&quot;Teoría&quot;)?0xffe3ebff:s.getTipoActividad().equals(&quot;Práctica&quot;)?0xffffead8:0xffd9f1ed;
+        f.b.actividad.setBackgroundTintList(ColorStateList.valueOf(color));
+        f.b.editar.setContentDescription(&quot;Editar sesión de &quot;+s.getCurso());
+        f.b.eliminar.setContentDescription(&quot;Eliminar sesión de &quot;+s.getCurso());
+        f.b.editar.setOnClickListener(v-&gt;acciones.editar(s));f.b.eliminar.setOnClickListener(v-&gt;acciones.eliminar(s));
+    }
+    @Override public int getItemCount(){return sesiones.size();}
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/SesionesActivity.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import com.example.lab06_20230420.databinding.ActivitySesionesBinding;
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.firestore.ListenerRegistration;
+import java.util.*;
+
+public class SesionesActivity extends PantallaPrivada implements SesionAdapter.Acciones {
+    private ActivitySesionesBinding binding;
+    private SesionAdapter adapter;
+    private ListenerRegistration listener;
+    @Override protected void onCreate(Bundle saved){
+        super.onCreate(saved);if(isFinishing()||repository==null)return;
+        binding=ActivitySesionesBinding.inflate(getLayoutInflater());setContentView(binding.getRoot());ajustarBarras();
+        adapter=new SesionAdapter(this);binding.lista.setLayoutManager(new LinearLayoutManager(this));binding.lista.setAdapter(adapter);
+        binding.agregar.setOnClickListener(v-&gt;startActivity(new Intent(this,FormularioSesionActivity.class)));
+        binding.verGraficos.setOnClickListener(v-&gt;startActivity(new Intent(this,GraficosActivity.class)));
+        binding.reintentar.setOnClickListener(v-&gt;escuchar());
+        binding.cerrarSesion.setOnClickListener(v-&gt;new AlertDialog.Builder(this).setTitle(&quot;Cerrar sesión&quot;)
+            .setMessage(&quot;¿Deseas cerrar tu sesión?&quot;).setNegativeButton(&quot;Cancelar&quot;,null).setPositiveButton(&quot;Cerrar sesión&quot;,(d,w)-&gt;{
+                detener();binding.cerrarSesion.setEnabled(false);adapter.mostrar(Collections.emptyList());
+                AuthUI.getInstance().signOut(this).addOnCompleteListener(t-&gt;{
+                    if(t.isSuccessful()||auth.getCurrentUser()==null)salir();
+                    else{binding.cerrarSesion.setEnabled(true);aviso(&quot;No se pudo cerrar sesión. Intenta de nuevo.&quot;);escuchar();}
+                });
+            }).show());
+    }
+    @Override protected void onStart(){super.onStart();if(binding!=null&amp;&amp;!isFinishing())escuchar();}
+    @Override protected void onStop(){detener();super.onStop();}
+    private void detener(){if(listener!=null){listener.remove();listener=null;}}
+    private void escuchar(){
+        detener();binding.cargando.setVisibility(View.VISIBLE);binding.reintentar.setVisibility(View.GONE);
+        listener=repository.escuchar((datos,cache,pendientes,error)-&gt;{
+            binding.cargando.setVisibility(View.GONE);
+            if(error!=null){binding.estado.setText(&quot;No se pudo cargar la lista. Comprueba conexión, sesión y reglas de Firestore.&quot;);binding.reintentar.setVisibility(View.VISIBLE);binding.vacio.setVisibility(View.GONE);return;}
+            adapter.mostrar(datos);binding.contador.setText(datos.size()+ (datos.size()==1?&quot; sesión registrada&quot;:&quot; sesiones registradas&quot;));
+            binding.vacio.setVisibility(datos.isEmpty()?View.VISIBLE:View.GONE);
+            binding.estado.setText(pendientes?&quot;Sincronización pendiente: mantén la conexión.&quot;:cache?&quot;Mostrando datos guardados en este dispositivo; esperando al servidor.&quot;:&quot;Actualizado en tiempo real&quot;);
+        });
+    }
+    @Override public void editar(SesionEstudio s){startActivity(new Intent(this,FormularioSesionActivity.class).putExtra(&quot;sesionId&quot;,s.getId()));}
+    @Override public void eliminar(SesionEstudio s){
+        AlertDialog dialog=new AlertDialog.Builder(this).setTitle(&quot;Eliminar sesión&quot;)
+            .setMessage(&quot;Se eliminará la sesión de &quot;+s.getCurso()+&quot; del &quot;+s.getFecha()+&quot;.&quot;)
+            .setNegativeButton(&quot;Cancelar&quot;,null).setPositiveButton(&quot;Eliminar&quot;,null).create();
+        dialog.setOnShowListener(d-&gt;dialog.getButton(-1).setOnClickListener(v-&gt;{
+            dialog.getButton(-1).setEnabled(false);
+            repository.eliminar(s.getId()).addOnCompleteListener(t-&gt;{
+                if(t.isSuccessful()){dialog.dismiss();aviso(&quot;Sesión eliminada.&quot;);}
+                else{dialog.getButton(-1).setEnabled(true);aviso(&quot;No se pudo eliminar. Revisa la conexión y tus permisos.&quot;);}
+            });
+        }));dialog.show();
+    }
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/SesionEstudio.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import com.google.firebase.firestore.Exclude;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/** Firestore persiste cuatro campos; el ID viene del documento. */
+public class SesionEstudio {
+    private String id, curso, fecha, tipoActividad;
+    private double horas;
+    public SesionEstudio() { }
+    public SesionEstudio(String id, String curso, String fecha, double horas, String tipoActividad) {
+        this.id=id; this.curso=curso; this.fecha=fecha; this.horas=horas; this.tipoActividad=tipoActividad;
+    }
+    @Exclude public String getId() { return id; }
+    public void setId(String id) { this.id=id; }
+    public String getCurso() { return curso; }
+    public String getFecha() { return fecha; }
+    public double getHoras() { return horas; }
+    public String getTipoActividad() { return tipoActividad; }
+    public Map&lt;String,Object&gt; datos() {
+        Map&lt;String,Object&gt; d=new LinkedHashMap&lt;&gt;();
+        d.put(&quot;curso&quot;,curso); d.put(&quot;fecha&quot;,fecha); d.put(&quot;horas&quot;,horas); d.put(&quot;tipoActividad&quot;,tipoActividad);
+        return d;
+    }
+}
+</code></pre>
+<h2>app/src/main/java/com/example/lab06_20230420/SesionRepository.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.*;
+import java.util.*;
+
+/** Toda operación queda bajo el UID autenticado; las reglas verifican lo mismo en el servidor. */
+public class SesionRepository {
+    private final CollectionReference sesiones;
+    public interface Cambios { void recibir(List&lt;SesionEstudio&gt; datos, boolean cache, boolean pendientes, Exception error); }
+    public SesionRepository(String uid) {
+        if(uid==null||uid.isEmpty()||uid.contains(&quot;/&quot;))throw new IllegalArgumentException(&quot;Se requiere un UID válido.&quot;);
+        sesiones=FirebaseFirestore.getInstance().collection(&quot;usuarios&quot;).document(uid).collection(&quot;sesiones&quot;);
+    }
+    public String nuevoId() { return sesiones.document().getId(); }
+    public Task&lt;DocumentSnapshot&gt; buscar(String id) { return sesiones.document(id).get(); }
+    public Task&lt;Void&gt; guardar(SesionEstudio s,boolean editar) {
+        EstadisticasEstudio.validar(s);
+        if(editar) return sesiones.document(s.getId()).update(s.datos());
+        return sesiones.document(s.getId()).set(s.datos());
+    }
+    public Task&lt;Void&gt; eliminar(String id) { return sesiones.document(id).delete(); }
+    public ListenerRegistration escuchar(Cambios cambios) {
+        return sesiones.addSnapshotListener(MetadataChanges.INCLUDE,(snap,error)-&gt;{
+            if(error!=null){cambios.recibir(Collections.emptyList(),false,false,error);return;}
+            if(snap==null)return;
+            List&lt;SesionEstudio&gt; r=new ArrayList&lt;&gt;();
+            try {
+                for(DocumentSnapshot d:snap.getDocuments()) {
+                    SesionEstudio s=d.toObject(SesionEstudio.class);
+                    if(s==null)throw new IllegalStateException(&quot;Sesión vacía&quot;);
+                    s.setId(d.getId());EstadisticasEstudio.validar(s);r.add(s);
+                }
+                r.sort(Comparator.comparing(SesionEstudio::getFecha).reversed().thenComparing(SesionEstudio::getId));
+                cambios.recibir(r,snap.getMetadata().isFromCache(),snap.getMetadata().hasPendingWrites(),null);
+            }catch(Exception e){cambios.recibir(Collections.emptyList(),false,false,new IllegalStateException(&quot;Hay una sesión con campos inválidos en Firestore.&quot;,e));}
+        });
+    }
+}
+</code></pre>
+<h2>app/src/main/res/drawable/fondo_etiqueta.xml</h2>
+<pre><code class="language-xml">&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;&lt;solid android:color=&quot;#E3EBFF&quot;/&gt;&lt;corners android:radius=&quot;9dp&quot;/&gt;&lt;padding android:left=&quot;10dp&quot; android:right=&quot;10dp&quot; android:top=&quot;4dp&quot; android:bottom=&quot;4dp&quot;/&gt;&lt;/shape&gt;
+</code></pre>
+<h2>app/src/main/res/drawable/ic_agregar.xml</h2>
+<pre><code class="language-xml">&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:width=&quot;24dp&quot; android:height=&quot;24dp&quot; android:viewportWidth=&quot;24&quot; android:viewportHeight=&quot;24&quot;&gt;&lt;path android:fillColor=&quot;#FFFFFF&quot; android:pathData=&quot;M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6z&quot;/&gt;&lt;/vector&gt;
+</code></pre>
+<h2>app/src/main/res/drawable/ic_editar.xml</h2>
+<pre><code class="language-xml">&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:width=&quot;24dp&quot; android:height=&quot;24dp&quot; android:viewportWidth=&quot;24&quot; android:viewportHeight=&quot;24&quot;&gt;&lt;path android:fillColor=&quot;#2454B7&quot; android:pathData=&quot;M3,17.25V21h3.75L17.81,9.94l-3.75,-3.75L3,17.25zM20.71,7.04a0.996,0.996 0,0 0,0 -1.41l-2.34,-2.34a0.996,0.996 0,0 0,-1.41 0l-1.83,1.83 3.75,3.75 1.83,-1.83z&quot;/&gt;&lt;/vector&gt;
+</code></pre>
+<h2>app/src/main/res/drawable/ic_eliminar.xml</h2>
+<pre><code class="language-xml">&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:width=&quot;24dp&quot; android:height=&quot;24dp&quot; android:viewportWidth=&quot;24&quot; android:viewportHeight=&quot;24&quot;&gt;&lt;path android:fillColor=&quot;#B3261E&quot; android:pathData=&quot;M6,19c0,1.1 0.9,2 2,2h8c1.1,0 2,-0.9 2,-2V7H6v12zM19,4h-3.5l-1,-1h-5l-1,1H5v2h14V4z&quot;/&gt;&lt;/vector&gt;
+</code></pre>
+<h2>app/src/main/res/drawable/ic_estudio.xml</h2>
+<pre><code class="language-xml">&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:width=&quot;80dp&quot; android:height=&quot;80dp&quot; android:viewportWidth=&quot;80&quot; android:viewportHeight=&quot;80&quot;&gt;
+    &lt;path android:fillColor=&quot;#2454B7&quot; android:pathData=&quot;M16,0L64,0Q80,0 80,16L80,64Q80,80 64,80L16,80Q0,80 0,64L0,16Q0,0 16,0&quot;/&gt;
+    &lt;path android:fillColor=&quot;#FFFFFF&quot; android:pathData=&quot;M14,21L34,21Q40,21 40,27Q40,21 46,21L66,21L66,55L46,55Q40,55 40,61Q40,55 34,55L14,55Z&quot;/&gt;
+    &lt;path android:strokeColor=&quot;#2454B7&quot; android:strokeWidth=&quot;2&quot; android:pathData=&quot;M40,27L40,54M20,30L33,30M20,37L33,37M47,30L60,30M47,37L60,37&quot;/&gt;
+&lt;/vector&gt;
+</code></pre>
+<h2>app/src/main/res/layout/activity_formulario_sesion.xml</h2>
+<pre><code class="language-xml">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:id=&quot;@+id/main&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;match_parent&quot; android:orientation=&quot;vertical&quot; android:background=&quot;#F4F6FC&quot;&gt;
+    &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:minHeight=&quot;72dp&quot; android:orientation=&quot;horizontal&quot; android:gravity=&quot;center_vertical&quot; android:padding=&quot;12dp&quot; android:background=&quot;#2454B7&quot;&gt;
+        &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/volver&quot; style=&quot;@style/Widget.MaterialComponents.Button.TextButton&quot; android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Volver&quot; android:textColor=&quot;#FFFFFF&quot; android:textAllCaps=&quot;false&quot;/&gt;
+        &lt;TextView android:id=&quot;@+id/titulo&quot; style=&quot;@style/Titulo&quot; android:text=&quot;Nueva sesión&quot;/&gt;
+    &lt;/LinearLayout&gt;
+    &lt;ScrollView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;0dp&quot; android:layout_weight=&quot;1&quot; android:fillViewport=&quot;true&quot;&gt;
+        &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:orientation=&quot;vertical&quot; android:padding=&quot;24dp&quot;&gt;
+            &lt;TextView style=&quot;@style/Etiqueta&quot; android:text=&quot;Curso&quot; android:labelFor=&quot;@id/curso&quot;/&gt;
+            &lt;EditText android:id=&quot;@+id/curso&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:minHeight=&quot;56dp&quot; android:hint=&quot;Ej.: Servicios y Aplicaciones para IoT&quot; android:inputType=&quot;textCapSentences&quot; android:maxLength=&quot;100&quot; android:autofillHints=&quot;&quot;/&gt;
+            &lt;TextView style=&quot;@style/Etiqueta&quot; android:text=&quot;Fecha de estudio&quot; android:labelFor=&quot;@id/fecha&quot;/&gt;
+            &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/fecha&quot; style=&quot;@style/Widget.MaterialComponents.Button.OutlinedButton&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;56dp&quot; android:text=&quot;Seleccionar fecha&quot; android:textAllCaps=&quot;false&quot;/&gt;
+            &lt;TextView style=&quot;@style/Etiqueta&quot; android:text=&quot;Horas dedicadas&quot; android:labelFor=&quot;@id/horas&quot;/&gt;
+            &lt;EditText android:id=&quot;@+id/horas&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:minHeight=&quot;56dp&quot; android:hint=&quot;Ej.: 1,5&quot; android:inputType=&quot;numberDecimal&quot; android:maxLength=&quot;8&quot; android:digits=&quot;0123456789.,&quot; android:autofillHints=&quot;&quot;/&gt;
+            &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Mayor que 0 y hasta 24 horas por sesión.&quot; android:textSize=&quot;12sp&quot; android:textColor=&quot;#59667A&quot;/&gt;
+            &lt;TextView style=&quot;@style/Etiqueta&quot; android:text=&quot;Tipo de actividad&quot; android:labelFor=&quot;@id/tipo&quot;/&gt;
+            &lt;Spinner android:id=&quot;@+id/tipo&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;56dp&quot;/&gt;
+            &lt;TextView android:id=&quot;@+id/error&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;20dp&quot; android:textColor=&quot;#B3261E&quot; android:accessibilityLiveRegion=&quot;polite&quot;/&gt;
+            &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/guardar&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;56dp&quot; android:layout_marginTop=&quot;16dp&quot; android:text=&quot;Guardar sesión&quot; android:textAllCaps=&quot;false&quot;/&gt;
+        &lt;/LinearLayout&gt;
+    &lt;/ScrollView&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+<h2>app/src/main/res/layout/activity_graficos.xml</h2>
+<pre><code class="language-xml">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:id=&quot;@+id/main&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;match_parent&quot; android:orientation=&quot;vertical&quot; android:background=&quot;#F4F6FC&quot;&gt;
+    &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:minHeight=&quot;72dp&quot; android:orientation=&quot;horizontal&quot; android:gravity=&quot;center_vertical&quot; android:padding=&quot;12dp&quot; android:background=&quot;#2454B7&quot;&gt;
+        &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/volver&quot; style=&quot;@style/Widget.MaterialComponents.Button.TextButton&quot; android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Volver&quot; android:textColor=&quot;#FFFFFF&quot; android:textAllCaps=&quot;false&quot;/&gt;
+        &lt;TextView style=&quot;@style/Titulo&quot; android:text=&quot;Mis gráficos&quot;/&gt;
+    &lt;/LinearLayout&gt;
+    &lt;ScrollView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;0dp&quot; android:layout_weight=&quot;1&quot; android:fillViewport=&quot;true&quot;&gt;
+        &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:orientation=&quot;vertical&quot; android:padding=&quot;20dp&quot;&gt;
+            &lt;TextView style=&quot;@style/Etiqueta&quot; android:text=&quot;Filtrar por curso&quot; android:labelFor=&quot;@id/filtroCurso&quot;/&gt;
+            &lt;Spinner android:id=&quot;@+id/filtroCurso&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;56dp&quot;/&gt;
+            &lt;TextView android:id=&quot;@+id/resumen&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;16dp&quot; android:textSize=&quot;22sp&quot; android:textStyle=&quot;bold&quot; android:textColor=&quot;#172944&quot;/&gt;
+            &lt;TextView android:id=&quot;@+id/estado&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;8dp&quot; android:textColor=&quot;#59667A&quot; android:accessibilityLiveRegion=&quot;polite&quot;/&gt;
+            &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/reintentar&quot; android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Reintentar&quot; android:visibility=&quot;gone&quot;/&gt;
+            &lt;TextView style=&quot;@style/Etiqueta&quot; android:text=&quot;Horas de estudio por mes&quot;/&gt;
+            &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Cada barra suma las horas del mes y año indicados.&quot; android:textColor=&quot;#59667A&quot;/&gt;
+            &lt;FrameLayout android:id=&quot;@+id/barras&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:background=&quot;#FFFFFF&quot; android:layout_marginTop=&quot;10dp&quot;/&gt;
+            &lt;TextView style=&quot;@style/Etiqueta&quot; android:text=&quot;Horas por tipo de actividad&quot;/&gt;
+            &lt;FrameLayout android:id=&quot;@+id/torta&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:background=&quot;#FFFFFF&quot; android:layout_marginTop=&quot;10dp&quot;/&gt;
+        &lt;/LinearLayout&gt;
+    &lt;/ScrollView&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+<h2>app/src/main/res/layout/activity_login.xml</h2>
+<pre><code class="language-xml">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:id=&quot;@+id/main&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;match_parent&quot; android:orientation=&quot;vertical&quot; android:gravity=&quot;center&quot; android:padding=&quot;28dp&quot; android:background=&quot;#F4F6FC&quot;&gt;
+    &lt;ImageView android:layout_width=&quot;88dp&quot; android:layout_height=&quot;88dp&quot; android:src=&quot;@drawable/ic_estudio&quot; android:contentDescription=&quot;Logo: libro abierto&quot;/&gt;
+    &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;24dp&quot; android:gravity=&quot;center&quot; android:text=&quot;Mis horas de estudio&quot; android:textSize=&quot;28sp&quot; android:textStyle=&quot;bold&quot; android:textColor=&quot;#172944&quot;/&gt;
+    &lt;TextView android:id=&quot;@+id/estadoLogin&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;16dp&quot; android:gravity=&quot;center&quot; android:text=&quot;Organiza tus sesiones y conoce cómo distribuyes tu tiempo.&quot; android:textColor=&quot;#59667A&quot; android:textSize=&quot;16sp&quot;/&gt;
+    &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/abrirAcceso&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;56dp&quot; android:layout_marginTop=&quot;28dp&quot; android:text=&quot;Abrir inicio de sesión&quot; android:textAllCaps=&quot;false&quot;/&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+<h2>app/src/main/res/layout/activity_sesiones.xml</h2>
+<pre><code class="language-xml">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot; android:id=&quot;@+id/main&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;match_parent&quot; android:orientation=&quot;vertical&quot; android:background=&quot;#F4F6FC&quot;&gt;
+    &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:minHeight=&quot;72dp&quot; android:orientation=&quot;horizontal&quot; android:gravity=&quot;center_vertical&quot; android:padding=&quot;16dp&quot; android:background=&quot;#2454B7&quot;&gt;
+        &lt;TextView style=&quot;@style/Titulo&quot; android:text=&quot;Mis sesiones de estudio&quot;/&gt;
+        &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/cerrarSesion&quot; style=&quot;@style/Widget.MaterialComponents.Button.TextButton&quot; android:layout_width=&quot;100dp&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Cerrar sesión&quot; android:textColor=&quot;#FFFFFF&quot; android:textAllCaps=&quot;false&quot;/&gt;
+    &lt;/LinearLayout&gt;
+    &lt;FrameLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;0dp&quot; android:layout_weight=&quot;1&quot;&gt;
+        &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;match_parent&quot; android:orientation=&quot;vertical&quot; android:paddingHorizontal=&quot;12dp&quot;&gt;
+            &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:gravity=&quot;center_vertical&quot; android:orientation=&quot;horizontal&quot; android:paddingVertical=&quot;12dp&quot;&gt;
+                &lt;TextView android:id=&quot;@+id/contador&quot; android:layout_width=&quot;0dp&quot; android:layout_height=&quot;wrap_content&quot; android:layout_weight=&quot;1&quot; android:text=&quot;Mis sesiones&quot; android:textColor=&quot;#172944&quot;/&gt;
+                &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/verGraficos&quot; style=&quot;@style/Widget.MaterialComponents.Button.OutlinedButton&quot; android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Ver gráficos&quot; android:textAllCaps=&quot;false&quot; app:cornerRadius=&quot;24dp&quot;/&gt;
+            &lt;/LinearLayout&gt;
+            &lt;TextView android:id=&quot;@+id/estado&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:paddingBottom=&quot;8dp&quot; android:textColor=&quot;#59667A&quot; android:textSize=&quot;12sp&quot; android:accessibilityLiveRegion=&quot;polite&quot;/&gt;
+            &lt;ProgressBar android:id=&quot;@+id/cargando&quot; style=&quot;?android:attr/progressBarStyleHorizontal&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;4dp&quot; android:indeterminate=&quot;true&quot;/&gt;
+            &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/reintentar&quot; android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Reintentar&quot; android:visibility=&quot;gone&quot;/&gt;
+            &lt;TextView android:id=&quot;@+id/vacio&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:padding=&quot;24dp&quot; android:gravity=&quot;center&quot; android:text=&quot;Todavía no tienes sesiones.\nPulsa + para registrar la primera.&quot; android:textColor=&quot;#59667A&quot; android:visibility=&quot;gone&quot;/&gt;
+            &lt;androidx.recyclerview.widget.RecyclerView android:id=&quot;@+id/lista&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;0dp&quot; android:layout_weight=&quot;1&quot; android:clipToPadding=&quot;false&quot; android:paddingBottom=&quot;88dp&quot;/&gt;
+        &lt;/LinearLayout&gt;
+        &lt;com.google.android.material.floatingactionbutton.FloatingActionButton android:id=&quot;@+id/agregar&quot; android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:layout_gravity=&quot;bottom|end&quot; android:layout_margin=&quot;20dp&quot; android:contentDescription=&quot;Agregar sesión de estudio&quot; app:srcCompat=&quot;@drawable/ic_agregar&quot; app:backgroundTint=&quot;#2454B7&quot; app:tint=&quot;#FFFFFF&quot;/&gt;
+    &lt;/FrameLayout&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+<h2>app/src/main/res/layout/fila_sesion.xml</h2>
+<pre><code class="language-xml">&lt;com.google.android.material.card.MaterialCardView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginBottom=&quot;12dp&quot; app:cardCornerRadius=&quot;16dp&quot; app:cardElevation=&quot;0dp&quot; app:strokeWidth=&quot;1dp&quot; app:strokeColor=&quot;#DCE3F1&quot; app:cardBackgroundColor=&quot;#FFFFFF&quot;&gt;
+    &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:orientation=&quot;horizontal&quot; android:gravity=&quot;center_vertical&quot; android:padding=&quot;16dp&quot;&gt;
+        &lt;LinearLayout android:layout_width=&quot;0dp&quot; android:layout_height=&quot;wrap_content&quot; android:layout_weight=&quot;1&quot; android:orientation=&quot;vertical&quot;&gt;
+            &lt;TextView android:id=&quot;@+id/curso&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:textSize=&quot;18sp&quot; android:textStyle=&quot;bold&quot; android:textColor=&quot;#172944&quot;/&gt;
+            &lt;TextView android:id=&quot;@+id/detalle&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;6dp&quot; android:textSize=&quot;15sp&quot; android:textColor=&quot;#2454B7&quot;/&gt;
+            &lt;TextView android:id=&quot;@+id/actividad&quot; android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;8dp&quot; android:textSize=&quot;13sp&quot; android:textColor=&quot;#172944&quot; android:background=&quot;@drawable/fondo_etiqueta&quot;/&gt;
+        &lt;/LinearLayout&gt;
+        &lt;ImageButton android:id=&quot;@+id/editar&quot; android:layout_width=&quot;48dp&quot; android:layout_height=&quot;48dp&quot; android:src=&quot;@drawable/ic_editar&quot; android:background=&quot;?attr/selectableItemBackgroundBorderless&quot; android:contentDescription=&quot;Editar sesión&quot;/&gt;
+        &lt;ImageButton android:id=&quot;@+id/eliminar&quot; android:layout_width=&quot;48dp&quot; android:layout_height=&quot;48dp&quot; android:src=&quot;@drawable/ic_eliminar&quot; android:background=&quot;?attr/selectableItemBackgroundBorderless&quot; android:contentDescription=&quot;Eliminar sesión&quot;/&gt;
+    &lt;/LinearLayout&gt;
+&lt;/com.google.android.material.card.MaterialCardView&gt;
+</code></pre>
+<h2>app/src/main/res/layout/firebase_login.xml</h2>
+<pre><code class="language-xml">&lt;ScrollView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;match_parent&quot; android:fillViewport=&quot;true&quot; android:background=&quot;#F4F6FC&quot;&gt;
+    &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:orientation=&quot;vertical&quot; android:gravity=&quot;center&quot; android:padding=&quot;28dp&quot;&gt;
+        &lt;ImageView android:layout_width=&quot;88dp&quot; android:layout_height=&quot;88dp&quot; android:src=&quot;@drawable/ic_estudio&quot; android:contentDescription=&quot;Logo de Mis horas de estudio&quot;/&gt;
+        &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;24dp&quot; android:gravity=&quot;center&quot; android:text=&quot;Mis horas de estudio&quot; android:textSize=&quot;28sp&quot; android:textStyle=&quot;bold&quot; android:textColor=&quot;#172944&quot;/&gt;
+        &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;12dp&quot; android:gravity=&quot;center&quot; android:text=&quot;Tu tiempo también cuenta.\nRegistra lo que aprendes cada día.&quot; android:textColor=&quot;#59667A&quot; android:textSize=&quot;17sp&quot;/&gt;
+        &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/accesoCorreo&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:minHeight=&quot;56dp&quot; android:layout_marginTop=&quot;32dp&quot; android:text=&quot;@string/acceso_correo&quot; android:textAllCaps=&quot;false&quot;/&gt;
+        &lt;com.google.android.material.button.MaterialButton android:id=&quot;@+id/accesoGoogle&quot; style=&quot;@style/Widget.MaterialComponents.Button.OutlinedButton&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:minHeight=&quot;56dp&quot; android:layout_marginTop=&quot;8dp&quot; android:text=&quot;@string/acceso_google&quot; android:textAllCaps=&quot;false&quot;/&gt;
+        &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:layout_marginTop=&quot;24dp&quot; android:gravity=&quot;center&quot; android:text=&quot;@string/ayuda_acceso&quot; android:textColor=&quot;#59667A&quot; android:textSize=&quot;14sp&quot;/&gt;
+    &lt;/LinearLayout&gt;
+&lt;/ScrollView&gt;
+</code></pre>
+<h2>app/src/main/res/values/strings.xml</h2>
+<pre><code class="language-xml">&lt;resources&gt;
+    &lt;string name=&quot;app_name&quot;&gt;Mis horas de estudio&lt;/string&gt;
+    &lt;string name=&quot;acceso_correo&quot;&gt;Ingresar o registrarme con correo&lt;/string&gt;
+    &lt;string name=&quot;acceso_google&quot;&gt;Continuar con Google&lt;/string&gt;
+    &lt;string name=&quot;ayuda_acceso&quot;&gt;¿Olvidaste tu contraseña? Selecciona correo para recuperarla.\n¿Eres nuevo? Desde ese mismo acceso puedes crear tu cuenta.&lt;/string&gt;
+&lt;/resources&gt;
+</code></pre>
+<h2>app/src/main/res/values/styles.xml</h2>
+<pre><code class="language-xml">&lt;resources&gt;
+    &lt;style name=&quot;Theme.Estudio&quot; parent=&quot;Theme.MaterialComponents.Light.NoActionBar&quot;&gt;
+        &lt;item name=&quot;colorPrimary&quot;&gt;#2454B7&lt;/item&gt;&lt;item name=&quot;colorPrimaryVariant&quot;&gt;#193E8D&lt;/item&gt;&lt;item name=&quot;colorSecondary&quot;&gt;#16978D&lt;/item&gt;&lt;item name=&quot;colorAccent&quot;&gt;#2454B7&lt;/item&gt;
+        &lt;item name=&quot;android:fontFamily&quot;&gt;sans&lt;/item&gt;&lt;item name=&quot;android:windowLightStatusBar&quot;&gt;false&lt;/item&gt;&lt;item name=&quot;android:statusBarColor&quot;&gt;#193E8D&lt;/item&gt;
+        &lt;item name=&quot;android:windowBackground&quot;&gt;#F4F6FC&lt;/item&gt;
+    &lt;/style&gt;
+    &lt;style name=&quot;Theme.Estudio.Auth&quot; parent=&quot;Theme.Estudio&quot;&gt;
+        &lt;item name=&quot;android:windowBackground&quot;&gt;#F4F6FC&lt;/item&gt;
+    &lt;/style&gt;
+    &lt;style name=&quot;Titulo&quot;&gt;&lt;item name=&quot;android:layout_width&quot;&gt;0dp&lt;/item&gt;&lt;item name=&quot;android:layout_height&quot;&gt;wrap_content&lt;/item&gt;&lt;item name=&quot;android:layout_weight&quot;&gt;1&lt;/item&gt;&lt;item name=&quot;android:textSize&quot;&gt;22sp&lt;/item&gt;&lt;item name=&quot;android:textStyle&quot;&gt;bold&lt;/item&gt;&lt;item name=&quot;android:textColor&quot;&gt;#FFFFFF&lt;/item&gt;&lt;/style&gt;
+    &lt;style name=&quot;Etiqueta&quot;&gt;&lt;item name=&quot;android:layout_width&quot;&gt;match_parent&lt;/item&gt;&lt;item name=&quot;android:layout_height&quot;&gt;wrap_content&lt;/item&gt;&lt;item name=&quot;android:textSize&quot;&gt;16sp&lt;/item&gt;&lt;item name=&quot;android:textStyle&quot;&gt;bold&lt;/item&gt;&lt;item name=&quot;android:textColor&quot;&gt;#172944&lt;/item&gt;&lt;item name=&quot;android:layout_marginTop&quot;&gt;18dp&lt;/item&gt;&lt;item name=&quot;android:layout_marginBottom&quot;&gt;6dp&lt;/item&gt;&lt;/style&gt;
+&lt;/resources&gt;
+</code></pre>
+<h2>app/src/test/java/com/example/lab06_20230420/EstadisticasEstudioTest.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import java.util.*;
+
+public class EstadisticasEstudioTest {
+    private SesionEstudio s(String curso,String fecha,double horas,String actividad){return new SesionEstudio(&quot;id&quot;,curso,fecha,horas,actividad);}
+    @Test public void sumaHorasDecimalesPorMesYNoNumeroDeSesiones(){
+        List&lt;SesionEstudio&gt; lista=Arrays.asList(s(&quot;IoT&quot;,&quot;2026-10-01&quot;,1.5,&quot;Teoría&quot;),s(&quot;IoT&quot;,&quot;2026-10-20&quot;,2,&quot;Práctica&quot;),s(&quot;IoT&quot;,&quot;2026-11-01&quot;,0.75,&quot;Laboratorio&quot;));
+        assertEquals(3.5,EstadisticasEstudio.porMes(lista).get(&quot;2026-10&quot;),1e-9);
+        assertEquals(0.75,EstadisticasEstudio.porMes(lista).get(&quot;2026-11&quot;),1e-9);
+    }
+    @Test public void noMezclaElMismoMesDeDiferentesAnios(){
+        Map&lt;String,Double&gt; r=EstadisticasEstudio.porMes(Arrays.asList(s(&quot;IoT&quot;,&quot;2027-01-01&quot;,2,&quot;Teoría&quot;),s(&quot;IoT&quot;,&quot;2026-01-01&quot;,1,&quot;Teoría&quot;)));
+        assertEquals(Arrays.asList(&quot;2026-01&quot;,&quot;2027-01&quot;),new ArrayList&lt;&gt;(r.keySet()));
+    }
+    @Test public void ambosGraficosUsanElCursoFiltrado(){
+        List&lt;SesionEstudio&gt; lista=Arrays.asList(s(&quot;IoT&quot;,&quot;2026-11-01&quot;,2.5,&quot;Teoría&quot;),s(&quot;Redes&quot;,&quot;2026-11-01&quot;,6,&quot;Práctica&quot;),s(&quot;IoT&quot;,&quot;2026-11-03&quot;,1,&quot;Laboratorio&quot;));
+        List&lt;SesionEstudio&gt; filtro=EstadisticasEstudio.filtrar(lista,&quot; iot &quot;);
+        assertEquals(3.5,EstadisticasEstudio.total(filtro),1e-9);
+        assertEquals(3.5,EstadisticasEstudio.porMes(filtro).get(&quot;2026-11&quot;),1e-9);
+        assertEquals(0,EstadisticasEstudio.porActividad(filtro).get(&quot;Práctica&quot;),1e-9);
+        assertEquals(2.5,EstadisticasEstudio.porActividad(filtro).get(&quot;Teoría&quot;),1e-9);
+    }
+    @Test public void cursosSinDuplicadosDeMayusculas(){
+        assertEquals(2,EstadisticasEstudio.cursos(Arrays.asList(s(&quot;IoT&quot;,&quot;2026-11-01&quot;,1,&quot;Teoría&quot;),s(&quot;iot&quot;,&quot;2026-11-01&quot;,1,&quot;Teoría&quot;),s(&quot;Redes&quot;,&quot;2026-11-01&quot;,1,&quot;Teoría&quot;))).size());
+    }
+    @Test public void aceptaComaYPuntoEnHoras(){assertEquals(1.5,EstadisticasEstudio.leerHoras(&quot;1,5&quot;),1e-9);assertEquals(1.5,EstadisticasEstudio.leerHoras(&quot;1.5&quot;),1e-9);}
+    @Test public void rechazaHorasInvalidas(){
+        for(String value:new String[]{&quot;0&quot;,&quot;-2&quot;,&quot;25&quot;,&quot;NaN&quot;,&quot;Infinity&quot;,&quot;1,2.3&quot;,&quot;&quot;,&quot;1e2&quot;}){
+            try{EstadisticasEstudio.leerHoras(value);fail(value);}catch(IllegalArgumentException expected){}
+        }
+    }
+    @Test public void validaFechaRealYActividad(){
+        try{EstadisticasEstudio.validar(s(&quot;IoT&quot;,&quot;2026-02-30&quot;,1,&quot;Teoría&quot;));fail();}catch(IllegalArgumentException expected){}
+        try{EstadisticasEstudio.validar(s(&quot;IoT&quot;,&quot;2026-02-28&quot;,1,&quot;Otra&quot;));fail();}catch(IllegalArgumentException expected){}
+        EstadisticasEstudio.validar(s(&quot;IoT&quot;,&quot;2026-02-28&quot;,1,&quot;Teoría&quot;));
+    }
+    @Test public void listaVaciaYFiltroSinResultadosSonCero(){assertTrue(EstadisticasEstudio.porMes(Collections.emptyList()).isEmpty());assertEquals(0,EstadisticasEstudio.total(Collections.emptyList()),0);assertEquals(3,EstadisticasEstudio.porActividad(Collections.emptyList()).size());}
+}
+</code></pre>
+<h2>app/src/androidTest/java/com/example/lab06_20230420/AppFlowTest.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import android.graphics.Bitmap;
+import android.os.SystemClock;
+import android.view.View;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import com.google.android.gms.tasks.*;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.*;
+import com.google.firebase.firestore.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.pressBack;
+import static androidx.test.espresso.action.ViewActions.*;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+@RunWith(AndroidJUnit4.class)
+public class AppFlowTest {
+    private &lt;T&gt;T esperar(Task&lt;T&gt; t)throws Exception{return Tasks.await(t,30,TimeUnit.SECONDS);}
+    private void visible(org.hamcrest.Matcher&lt;View&gt; matcher){
+        AssertionError last=null;
+        for(int i=0;i&lt;80;i++){try{onView(matcher).check(matches(isDisplayed()));return;}catch(androidx.test.espresso.NoMatchingViewException|AssertionError e){last=new AssertionError(e);SystemClock.sleep(200);}}
+        throw last;
+    }
+    private void capturar(String nombre)throws Exception{
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(()-&gt;{
+            Collection&lt;android.app.Activity&gt; activities=androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED);
+            for(android.app.Activity a:activities){View v=a.getWindow().getDecorView().getRootView();
+                if(v.getWidth()==0||v.getHeight()==0)continue;
+                Bitmap bitmap=Bitmap.createBitmap(v.getWidth(),v.getHeight(),Bitmap.Config.ARGB_8888);v.draw(new android.graphics.Canvas(bitmap));
+                File dir=new File(a.getExternalFilesDir(null),&quot;capturas&quot;);dir.mkdirs();
+                try(FileOutputStream out=new FileOutputStream(new File(dir,nombre+&quot;.png&quot;))){bitmap.compress(Bitmap.CompressFormat.PNG,100,out);}catch(IOException e){throw new RuntimeException(e);}bitmap.recycle();break;
+            }
+        });
+    }
+    @Test public void interfazCrudGraficosYRestauracion()throws Exception{
+        FirebaseApp app=FirebaseApp.initializeApp(InstrumentationRegistry.getInstrumentation().getTargetContext());assertEquals(&quot;lab6-20230420&quot;,app.getOptions().getProjectId());
+        FirebaseAuth auth=FirebaseAuth.getInstance();auth.signOut();
+        String correo=&quot;pantalla-&quot;+UUID.randomUUID()+&quot;@example.com&quot;,clave=&quot;Lab6!&quot;+UUID.randomUUID(),uid=null;
+        try{
+            uid=esperar(auth.createUserWithEmailAndPassword(correo,clave)).getUser().getUid();
+            try(ActivityScenario&lt;SesionesActivity&gt; scenario=ActivityScenario.launch(SesionesActivity.class)){
+                visible(withId(R.id.agregar));onView(withId(R.id.agregar)).perform(click());
+                visible(withId(R.id.curso));onView(withId(R.id.curso)).perform(replaceText(&quot;Servicios y Aplicaciones para IoT&quot;),closeSoftKeyboard());
+                onView(withId(R.id.horas)).perform(scrollTo(),replaceText(&quot;1,5&quot;),closeSoftKeyboard());
+                onView(withId(R.id.tipo)).perform(scrollTo(),click());onData(is(&quot;Laboratorio&quot;)).perform(click());
+                capturar(&quot;formulario&quot;);onView(withId(R.id.guardar)).perform(scrollTo(),click());
+                visible(withText(&quot;Servicios y Aplicaciones para IoT&quot;));visible(withText(&quot;1 sesión registrada&quot;));capturar(&quot;lista&quot;);
+                onView(withId(R.id.editar)).perform(click());visible(withId(R.id.guardar));
+                onView(withId(R.id.curso)).perform(replaceText(&quot;Redes de Computadoras&quot;),closeSoftKeyboard());
+                onView(withId(R.id.horas)).perform(scrollTo(),replaceText(&quot;2.25&quot;),closeSoftKeyboard());
+                onView(withId(R.id.guardar)).perform(scrollTo(),click());visible(withId(R.id.verGraficos));visible(withText(&quot;Redes de Computadoras&quot;));
+                onView(withId(R.id.verGraficos)).perform(click());visible(withId(R.id.filtroCurso));visible(withText(containsString(&quot;horas · 1 sesión&quot;)));capturar(&quot;graficos&quot;);
+                onView(withId(R.id.filtroCurso)).perform(click());onData(is(&quot;Redes de Computadoras&quot;)).perform(click());
+                onView(withId(R.id.resumen)).check(matches(withText(containsString(&quot;horas&quot;))));
+                onView(withId(R.id.volver)).perform(click());visible(withId(R.id.editar));
+                onView(withId(R.id.eliminar)).perform(click());onView(withText(&quot;Eliminar&quot;)).perform(click());visible(withText(&quot;0 sesiones registradas&quot;));
+                scenario.recreate();visible(withId(R.id.agregar));onView(withId(R.id.cerrarSesion)).check(matches(isDisplayed()));
+            }
+        }finally{
+            if(uid!=null){esperar(auth.signInWithEmailAndPassword(correo,clave));
+                FirebaseFirestore db=FirebaseFirestore.getInstance();for(DocumentSnapshot d:esperar(db.collection(&quot;usuarios&quot;).document(uid).collection(&quot;sesiones&quot;).get()).getDocuments())esperar(d.getReference().delete());
+                esperar(auth.getCurrentUser().delete());}auth.signOut();
+        }
+    }
+    @Test public void firebaseUiRegistroLoginRecuperacionYCierreEnEspanol()throws Exception{
+        FirebaseAuth auth=FirebaseAuth.getInstance();auth.signOut();
+        String correo=&quot;acceso-&quot;+UUID.randomUUID()+&quot;@example.com&quot;,clave=&quot;Lab6!&quot;+UUID.randomUUID();
+        try(ActivityScenario&lt;LoginActivity&gt; scenario=ActivityScenario.launch(LoginActivity.class)){
+            visible(withId(R.id.accesoCorreo));onView(withId(R.id.accesoGoogle)).check(matches(isDisplayed()));capturar(&quot;login&quot;);
+            onView(withId(R.id.accesoCorreo)).perform(click());visible(withId(com.firebase.ui.auth.R.id.email));
+            onView(withId(com.firebase.ui.auth.R.id.email)).perform(replaceText(correo),closeSoftKeyboard());
+            onView(withId(com.firebase.ui.auth.R.id.button_sign_up)).perform(click());visible(withId(com.firebase.ui.auth.R.id.password));
+            onView(withId(com.firebase.ui.auth.R.id.password)).perform(replaceText(clave),closeSoftKeyboard());
+            onView(withId(com.firebase.ui.auth.R.id.button_create)).perform(click());visible(withId(R.id.agregar));
+            assertEquals(correo,auth.getCurrentUser().getEmail());
+            onView(withId(R.id.cerrarSesion)).perform(click());onView(withId(android.R.id.button1)).perform(click());
+            visible(withId(R.id.accesoCorreo));assertNull(auth.getCurrentUser());
+            onView(withId(R.id.accesoCorreo)).perform(click());visible(withId(com.firebase.ui.auth.R.id.email));
+            onView(withId(com.firebase.ui.auth.R.id.email)).perform(replaceText(correo),closeSoftKeyboard());
+            onView(withId(com.firebase.ui.auth.R.id.button_sign_in)).perform(click());visible(withId(com.firebase.ui.auth.R.id.password));
+            onView(withId(com.firebase.ui.auth.R.id.trouble_signing_in)).perform(click());visible(withId(com.firebase.ui.auth.R.id.email));
+            onView(withId(com.firebase.ui.auth.R.id.button_done)).check(matches(withText(&quot;Enviar&quot;)));pressBack();
+            visible(withId(com.firebase.ui.auth.R.id.password));onView(withId(com.firebase.ui.auth.R.id.password)).perform(replaceText(clave),closeSoftKeyboard());
+            onView(withId(com.firebase.ui.auth.R.id.button_done)).perform(click());visible(withId(R.id.agregar));assertEquals(correo,auth.getCurrentUser().getEmail());
+        }finally{
+            InstrumentationRegistry.getInstrumentation().runOnMainSync(()-&gt;{
+                for(androidx.test.runner.lifecycle.Stage stage:new androidx.test.runner.lifecycle.Stage[]{androidx.test.runner.lifecycle.Stage.RESUMED,androidx.test.runner.lifecycle.Stage.STARTED,androidx.test.runner.lifecycle.Stage.STOPPED})
+                    for(android.app.Activity a:new ArrayList&lt;&gt;(androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(stage)))a.finish();
+            });
+            try{esperar(auth.signInWithEmailAndPassword(correo,clave));esperar(auth.getCurrentUser().delete());}catch(Exception ignored){}auth.signOut();
+        }
+    }
+}
+</code></pre>
+<h2>app/src/androidTest/java/com/example/lab06_20230420/FirebaseIntegrationTest.java</h2>
+<pre><code class="language-java">package com.example.lab06_20230420;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import com.google.android.gms.tasks.*;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.*;
+import com.google.firebase.firestore.*;
+import java.util.*;
+import java.util.concurrent.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+
+/** Solo lab6-20230420: crea y limpia cuentas y documentos de prueba con UUID propio. */
+@RunWith(AndroidJUnit4.class)
+public class FirebaseIntegrationTest {
+    private &lt;T&gt;T esperar(Task&lt;T&gt; t)throws Exception{return Tasks.await(t,30,TimeUnit.SECONDS);}
+    private void denegada(Task&lt;?&gt; t)throws Exception{
+        try{esperar(t);fail(&quot;El servidor debe rechazar esta operación&quot;);}
+        catch(ExecutionException e){assertTrue(e.getCause() instanceof FirebaseFirestoreException);assertEquals(FirebaseFirestoreException.Code.PERMISSION_DENIED,((FirebaseFirestoreException)e.getCause()).getCode());}
+    }
+    @Test public void crudTiempoRealYReglasAislanDosUsuarios()throws Exception{
+        FirebaseApp app=FirebaseApp.initializeApp(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        assertNotNull(app);assertEquals(&quot;lab6-20230420&quot;,app.getOptions().getProjectId());
+        FirebaseAuth auth=FirebaseAuth.getInstance();FirebaseFirestore db=FirebaseFirestore.getInstance();auth.signOut();
+        String run=UUID.randomUUID().toString().replace(&quot;-&quot;,&quot;&quot;);String clave=&quot;Lab6!&quot;+UUID.randomUUID();
+        String a=&quot;sesion-&quot;+run+&quot;-a@example.com&quot;,b=&quot;sesion-&quot;+run+&quot;-b@example.com&quot;,uid=null;boolean creadoA=false,creadoB=false;
+        ListenerRegistration listener=null;
+        try{
+            uid=esperar(auth.createUserWithEmailAndPassword(a,clave)).getUser().getUid();creadoA=true;
+            SesionRepository repo=new SesionRepository(uid);String id=repo.nuevoId();
+            DocumentReference ref=db.collection(&quot;usuarios&quot;).document(uid).collection(&quot;sesiones&quot;).document(id);
+            CountDownLatch recibido=new CountDownLatch(1);
+            listener=repo.escuchar((datos,cache,pendientes,error)-&gt;{if(error==null&amp;&amp;!cache&amp;&amp;!pendientes&amp;&amp;!datos.isEmpty())recibido.countDown();});
+            SesionEstudio sesion=new SesionEstudio(id,&quot;IoT&quot;,&quot;2026-11-17&quot;,1.5,&quot;Laboratorio&quot;);esperar(repo.guardar(sesion,false));
+            assertTrue(&quot;El listener debe recibir el alta del servidor&quot;,recibido.await(20,TimeUnit.SECONDS));
+            assertEquals(1.5,esperar(ref.get(Source.SERVER)).getDouble(&quot;horas&quot;),0);
+            esperar(repo.guardar(new SesionEstudio(id,&quot;Redes&quot;,&quot;2026-10-28&quot;,2.25,&quot;Práctica&quot;),true));
+            assertEquals(&quot;Redes&quot;,esperar(ref.get(Source.SERVER)).getString(&quot;curso&quot;));
+            Map&lt;String,Object&gt; invalido=new HashMap&lt;&gt;(sesion.datos());invalido.put(&quot;horas&quot;,-1);denegada(ref.update(invalido));
+            invalido=new HashMap&lt;&gt;(sesion.datos());invalido.put(&quot;admin&quot;,true);denegada(ref.set(invalido));
+            listener.remove();listener=null;auth.signOut();
+            esperar(auth.createUserWithEmailAndPassword(b,clave));creadoB=true;
+            denegada(ref.get(Source.SERVER));denegada(ref.update(&quot;horas&quot;,3));
+            esperar(auth.getCurrentUser().delete());creadoB=false;
+            esperar(auth.signInWithEmailAndPassword(a,clave));esperar(repo.eliminar(id));assertFalse(esperar(ref.get(Source.SERVER)).exists());
+        }finally{
+            if(listener!=null)listener.remove();
+            if(creadoB){esperar(auth.signInWithEmailAndPassword(b,clave));esperar(auth.getCurrentUser().delete());}
+            if(creadoA){esperar(auth.signInWithEmailAndPassword(a,clave));
+                for(DocumentSnapshot d:esperar(db.collection(&quot;usuarios&quot;).document(uid).collection(&quot;sesiones&quot;).get()).getDocuments())esperar(d.getReference().delete());
+                esperar(auth.getCurrentUser().delete());}
+            auth.signOut();
+        }
+    }
+}
+</code></pre>
+<h2>build.gradle</h2>
+<pre><code class="language-groovy">plugins {
+    id &#39;com.android.application&#39; version &#39;9.0.0&#39; apply false
+    id &#39;com.google.gms.google-services&#39; version &#39;4.4.4&#39; apply false
+}
+</code></pre>
+<h2>app/build.gradle</h2>
+<pre><code class="language-groovy">plugins { id &#39;com.android.application&#39; }
+if (file(&#39;google-services.json&#39;).exists()) { apply plugin: &#39;com.google.gms.google-services&#39; }
+android {
+    namespace &#39;com.example.lab06_20230420&#39;
+    compileSdk 36
+    defaultConfig {
+        applicationId &#39;com.example.lab06_20230420&#39;
+        minSdk 34
+        targetSdk 36
+        versionCode 1
+        versionName &#39;1.0&#39;
+        testInstrumentationRunner &#39;androidx.test.runner.AndroidJUnitRunner&#39;
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    buildFeatures { viewBinding true }
+}
+dependencies {
+    implementation &#39;androidx.appcompat:appcompat:1.7.1&#39;
+    implementation &#39;com.google.android.material:material:1.13.0&#39;
+    implementation &#39;androidx.activity:activity:1.12.2&#39;
+    implementation &#39;androidx.recyclerview:recyclerview:1.4.0&#39;
+    implementation platform(&#39;com.google.firebase:firebase-bom:34.13.0&#39;)
+    implementation &#39;com.google.firebase:firebase-auth&#39;
+    implementation &#39;com.google.firebase:firebase-firestore&#39;
+    implementation &#39;com.firebaseui:firebase-ui-auth:9.1.1&#39;
+    testImplementation &#39;junit:junit:4.13.2&#39;
+    androidTestImplementation &#39;androidx.test.ext:junit:1.3.0&#39;
+    androidTestImplementation &#39;androidx.test.espresso:espresso-core:3.7.0&#39;
+}
+</code></pre>
+<h2>settings.gradle</h2>
+<pre><code class="language-groovy">pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories { google(); mavenCentral() }
+}
+rootProject.name = &#39;LAB6_20230420&#39;
+include &#39;:app&#39;
+</code></pre>
+<h2>gradle.properties</h2>
+<pre><code class="language-text">org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+</code></pre>
+<h2>gradle/wrapper/gradle-wrapper.properties</h2>
+<pre><code class="language-text">#Mon Jan 19 22:14:28 PET 2026
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionSha256Sum=a17ddd85a26b6a7f5ddb71ff8b05fc5104c0202c6e64782429790c933686c806
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.1.0-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+</code></pre>
+<h2>.gitignore</h2>
+<pre><code class="language-text">/.idea/
+/.gradle/
+**/build/
+/local.properties
+/app/google-services.json
+*.jks
+*.keystore
+/firebase-debug.log
+/firestore-debug.log
+</code></pre>
+<h2>firestore.rules</h2>
+<pre><code class="language-text">rules_version = &#39;2&#39;;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /usuarios/{uid}/sesiones/{sesionId} {
+      function propietario() { return request.auth != null &amp;&amp; request.auth.uid == uid; }
+      function valida() {
+        let d = request.resource.data;
+        return d.keys().hasAll([&#39;curso&#39;,&#39;fecha&#39;,&#39;horas&#39;,&#39;tipoActividad&#39;])
+          &amp;&amp; d.keys().hasOnly([&#39;curso&#39;,&#39;fecha&#39;,&#39;horas&#39;,&#39;tipoActividad&#39;])
+          &amp;&amp; d.curso is string &amp;&amp; d.curso.size() &gt; 0 &amp;&amp; d.curso.size() &lt;= 100
+          &amp;&amp; d.fecha is string &amp;&amp; d.fecha.matches(&#39;[0-9]{4}-[0-9]{2}-[0-9]{2}&#39;)
+          &amp;&amp; (d.horas is int || d.horas is float) &amp;&amp; d.horas &gt; 0 &amp;&amp; d.horas &lt;= 24
+          &amp;&amp; d.tipoActividad in [&#39;Teoría&#39;,&#39;Práctica&#39;,&#39;Laboratorio&#39;];
+      }
+      allow read, delete: if propietario();
+      allow create, update: if propietario() &amp;&amp; valida();
+    }
+  }
+}
+</code></pre>
+<h2>firebase.json</h2>
+<pre><code class="language-text">{&quot;firestore&quot;:{&quot;rules&quot;:&quot;firestore.rules&quot;}}
+</code></pre>
+<h2>.firebaserc</h2>
+<pre><code class="language-text">{&quot;projects&quot;:{&quot;default&quot;:&quot;lab6-20230420&quot;}}
+</code></pre>
+</section></main></body></html>

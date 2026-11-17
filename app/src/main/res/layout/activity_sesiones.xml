@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="#F4F6FC">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="72dp" android:orientation="horizontal" android:gravity="center_vertical" android:padding="16dp" android:background="#2454B7">
+        <TextView style="@style/Titulo" android:text="Mis sesiones de estudio"/>
+        <com.google.android.material.button.MaterialButton android:id="@+id/cerrarSesion" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="100dp" android:layout_height="wrap_content" android:text="Cerrar sesión" android:textColor="#FFFFFF" android:textAllCaps="false"/>
+    </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:paddingHorizontal="12dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:paddingVertical="12dp">
+                <TextView android:id="@+id/contador" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mis sesiones" android:textColor="#172944"/>
+                <com.google.android.material.button.MaterialButton android:id="@+id/verGraficos" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ver gráficos" android:textAllCaps="false" app:cornerRadius="24dp"/>
+            </LinearLayout>
+            <TextView android:id="@+id/estado" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingBottom="8dp" android:textColor="#59667A" android:textSize="12sp" android:accessibilityLiveRegion="polite"/>
+            <ProgressBar android:id="@+id/cargando" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="4dp" android:indeterminate="true"/>
+            <com.google.android.material.button.MaterialButton android:id="@+id/reintentar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reintentar" android:visibility="gone"/>
+            <TextView android:id="@+id/vacio" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="24dp" android:gravity="center" android:text="Todavía no tienes sesiones.\nPulsa + para registrar la primera." android:textColor="#59667A" android:visibility="gone"/>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/lista" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false" android:paddingBottom="88dp"/>
+        </LinearLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@+id/agregar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|end" android:layout_margin="20dp" android:contentDescription="Agregar sesión de estudio" app:srcCompat="@drawable/ic_agregar" app:backgroundTint="#2454B7" app:tint="#FFFFFF"/>
+    </FrameLayout>
+</LinearLayout>

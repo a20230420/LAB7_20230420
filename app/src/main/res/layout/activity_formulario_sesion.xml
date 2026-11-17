@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="#F4F6FC">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="72dp" android:orientation="horizontal" android:gravity="center_vertical" android:padding="12dp" android:background="#2454B7">
+        <com.google.android.material.button.MaterialButton android:id="@+id/volver" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Volver" android:textColor="#FFFFFF" android:textAllCaps="false"/>
+        <TextView android:id="@+id/titulo" style="@style/Titulo" android:text="Nueva sesión"/>
+    </LinearLayout>
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+            <TextView style="@style/Etiqueta" android:text="Curso" android:labelFor="@id/curso"/>
+            <EditText android:id="@+id/curso" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:hint="Ej.: Servicios y Aplicaciones para IoT" android:inputType="textCapSentences" android:maxLength="100" android:autofillHints=""/>
+            <TextView style="@style/Etiqueta" android:text="Fecha de estudio" android:labelFor="@id/fecha"/>
+            <com.google.android.material.button.MaterialButton android:id="@+id/fecha" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="match_parent" android:layout_height="56dp" android:text="Seleccionar fecha" android:textAllCaps="false"/>
+            <TextView style="@style/Etiqueta" android:text="Horas dedicadas" android:labelFor="@id/horas"/>
+            <EditText android:id="@+id/horas" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" android:hint="Ej.: 1,5" android:inputType="numberDecimal" android:maxLength="8" android:digits="0123456789.," android:autofillHints=""/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Mayor que 0 y hasta 24 horas por sesión." android:textSize="12sp" android:textColor="#59667A"/>
+            <TextView style="@style/Etiqueta" android:text="Tipo de actividad" android:labelFor="@id/tipo"/>
+            <Spinner android:id="@+id/tipo" android:layout_width="match_parent" android:layout_height="56dp"/>
+            <TextView android:id="@+id/error" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:textColor="#B3261E" android:accessibilityLiveRegion="polite"/>
+            <com.google.android.material.button.MaterialButton android:id="@+id/guardar" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="16dp" android:text="Guardar sesión" android:textAllCaps="false"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

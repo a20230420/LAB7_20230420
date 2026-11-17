@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="#F4F6FC">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="72dp" android:orientation="horizontal" android:gravity="center_vertical" android:padding="12dp" android:background="#2454B7">
+        <com.google.android.material.button.MaterialButton android:id="@+id/volver" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Volver" android:textColor="#FFFFFF" android:textAllCaps="false"/>
+        <TextView style="@style/Titulo" android:text="Mis gráficos"/>
+    </LinearLayout>
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+            <TextView style="@style/Etiqueta" android:text="Filtrar por curso" android:labelFor="@id/filtroCurso"/>
+            <Spinner android:id="@+id/filtroCurso" android:layout_width="match_parent" android:layout_height="56dp"/>
+            <TextView android:id="@+id/resumen" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:textSize="22sp" android:textStyle="bold" android:textColor="#172944"/>
+            <TextView android:id="@+id/estado" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="#59667A" android:accessibilityLiveRegion="polite"/>
+            <com.google.android.material.button.MaterialButton android:id="@+id/reintentar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reintentar" android:visibility="gone"/>
+            <TextView style="@style/Etiqueta" android:text="Horas de estudio por mes"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cada barra suma las horas del mes y año indicados." android:textColor="#59667A"/>
+            <FrameLayout android:id="@+id/barras" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="#FFFFFF" android:layout_marginTop="10dp"/>
+            <TextView style="@style/Etiqueta" android:text="Horas por tipo de actividad"/>
+            <FrameLayout android:id="@+id/torta" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="#FFFFFF" android:layout_marginTop="10dp"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

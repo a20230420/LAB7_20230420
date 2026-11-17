@@ -1,0 +1,6 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="28dp" android:background="#F4F6FC">
+    <ImageView android:layout_width="88dp" android:layout_height="88dp" android:src="@drawable/ic_estudio" android:contentDescription="Logo: libro abierto"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:gravity="center" android:text="Mis horas de estudio" android:textSize="28sp" android:textStyle="bold" android:textColor="#172944"/>
+    <TextView android:id="@+id/estadoLogin" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:gravity="center" android:text="Organiza tus sesiones y conoce cómo distribuyes tu tiempo." android:textColor="#59667A" android:textSize="16sp"/>
+    <com.google.android.material.button.MaterialButton android:id="@+id/abrirAcceso" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="28dp" android:text="Abrir inicio de sesión" android:textAllCaps="false"/>
+</LinearLayout>

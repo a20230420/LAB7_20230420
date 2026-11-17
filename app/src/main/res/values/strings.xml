@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Mis horas de estudio</string>
+    <string name="acceso_correo">Ingresar o registrarme con correo</string>
+    <string name="acceso_google">Continuar con Google</string>
+    <string name="ayuda_acceso">¿Olvidaste tu contraseña? Selecciona correo para recuperarla.\n¿Eres nuevo? Desde ese mismo acceso puedes crear tu cuenta.</string>
+</resources>
