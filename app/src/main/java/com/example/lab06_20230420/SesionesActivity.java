@@ -16,6 +16,8 @@ public class SesionesActivity extends PantallaPrivada implements SesionAdapter.A
     private ListenerRegistration listener;
     @Override protected void onCreate(Bundle saved){
         super.onCreate(saved);if(isFinishing()||repository==null)return;
+        findViewById(R.id.mc_abrir).setOnClickListener(v ->
+                startActivity(new Intent(this, MicroserviciosActivity.class)));
         binding=ActivitySesionesBinding.inflate(getLayoutInflater());setContentView(binding.getRoot());ajustarBarras();
         adapter=new SesionAdapter(this);binding.lista.setLayoutManager(new LinearLayoutManager(this));binding.lista.setAdapter(adapter);
         binding.agregar.setOnClickListener(v->startActivity(new Intent(this,FormularioSesionActivity.class)));
